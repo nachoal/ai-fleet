@@ -1,1 +1,1 @@
-"""Commands package."""
+"""AI Fleet CLI commands."""
