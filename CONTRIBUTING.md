@@ -21,6 +21,18 @@ Thank you for your interest in contributing to AI Fleet! This document provides 
    pre-commit install
    ```
 
+4. **Install Lefthook hooks** (alternative to pre-commit)
+   ```bash
+   pip install lefthook
+   lefthook install
+   ```
+   
+   Or with uv:
+   ```bash
+   uv pip install lefthook
+   uv run lefthook install
+   ```
+
 ## Code Style
 
 We use [Ruff](https://github.com/astral-sh/ruff) for linting and formatting:
@@ -54,14 +66,31 @@ pytest tests/test_config.py
 pytest -v
 ```
 
-## Pre-commit Hooks
+## Git Hooks
 
+We support both pre-commit and Lefthook for git hooks. Choose one:
+
+### Pre-commit
 Pre-commit hooks will automatically:
 - Run Ruff linting and formatting
 - Check for trailing whitespace
 - Ensure files end with a newline
 - Validate YAML and TOML files
 - Run mypy type checking
+
+### Lefthook (Recommended)
+Lefthook is faster and runs with `uv`. It provides:
+
+**On commit:**
+- Ruff linting with auto-fix on staged files
+- Ruff formatting on staged files
+- YAML and TOML validation
+- Trailing whitespace removal
+
+**On push:**
+- Full test suite with coverage
+- Type checking with mypy
+- Format and lint checks on entire codebase
 
 ## Making Changes
 

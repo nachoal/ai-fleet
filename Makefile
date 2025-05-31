@@ -17,6 +17,7 @@ install:
 install-dev:
 	pip install -e ".[test,dev]"
 	pre-commit install
+	lefthook install
 
 test:
 	pytest
