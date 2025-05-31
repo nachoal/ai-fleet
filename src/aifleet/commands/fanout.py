@@ -66,7 +66,7 @@ def fanout(count: int, prefix: str, prompt: str, agent: str, quick: bool) -> Non
         suffix = generate_suffix(i)
         branch_name = f"{prefix}-{suffix}"
 
-        click.echo(f"\nCreating agent {i+1}/{count}: {branch_name}")
+        click.echo(f"\nCreating agent {i + 1}/{count}: {branch_name}")
 
         # Setup worktree
         worktree_path = worktree.setup_worktree(

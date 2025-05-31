@@ -50,7 +50,7 @@ def multi(pairs: tuple, agent: str, quick: bool) -> None:
     total = len(branch_prompts)
 
     for i, (branch_name, prompt) in enumerate(branch_prompts):
-        click.echo(f"\nCreating agent {i+1}/{total}: {branch_name}")
+        click.echo(f"\nCreating agent {i + 1}/{total}: {branch_name}")
 
         # Check if agent already exists
         if state.get_agent(branch_name):
