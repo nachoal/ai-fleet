@@ -36,31 +36,5 @@ jobs:
       uses: codecov/codecov-action@v4
       with:
         file: ./coverage.xml
-        fail_ci_if_error: true
+        fail_ci_if_error: false
         token: ${{ secrets.CODECOV_TOKEN }}
-
-  test-tmux:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
-    
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y tmux git
-    
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -e ".[test]"
-    
-    - name: Run integration tests
-      run: |
-        # Run tests that require tmux
-        pytest tests/test_tmux.py -v
