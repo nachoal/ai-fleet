@@ -2,8 +2,6 @@
 
 from unittest.mock import MagicMock, patch
 
-import click
-import pytest
 from click.testing import CliRunner
 
 from aifleet.cli import cli
@@ -16,7 +14,7 @@ class TestCLI:
         """Test CLI help."""
         runner = CliRunner()
         result = runner.invoke(cli, ["--help"])
-        
+
         assert result.exit_code == 0
         assert "AI Fleet" in result.output
         assert "Manage AI coding agents" in result.output
@@ -25,7 +23,7 @@ class TestCLI:
         """Test version display."""
         runner = CliRunner()
         result = runner.invoke(cli, ["--version"])
-        
+
         assert result.exit_code == 0
         assert "version" in result.output.lower()
 
@@ -36,13 +34,13 @@ class TestCLI:
         mock_config = MagicMock()
         mock_config.config_file = temp_dir / "config.toml"
         mock_config_class.return_value = mock_config
-        
+
         # Create config file
         mock_config.config_file.write_text("test = true")
-        
+
         runner = CliRunner()
         result = runner.invoke(cli, ["config"])
-        
+
         assert result.exit_code == 0
         assert "Configuration file:" in result.output
         assert "test = true" in result.output
@@ -54,10 +52,10 @@ class TestCLI:
         mock_config = MagicMock()
         mock_config.validate.return_value = []
         mock_config_class.return_value = mock_config
-        
+
         runner = CliRunner()
         result = runner.invoke(cli, ["config", "--validate"])
-        
+
         assert result.exit_code == 0
         assert "Configuration is valid" in result.output
 
@@ -68,13 +66,13 @@ class TestCLI:
         mock_config = MagicMock()
         mock_config.validate.return_value = [
             "repo_root does not exist",
-            "Credential file not found: .env"
+            "Credential file not found: .env",
         ]
         mock_config_class.return_value = mock_config
-        
+
         runner = CliRunner()
         result = runner.invoke(cli, ["config", "--validate"])
-        
+
         assert result.exit_code == 1
         assert "Configuration errors:" in result.output
         assert "repo_root does not exist" in result.output
@@ -87,10 +85,10 @@ class TestCLI:
         mock_config = MagicMock()
         mock_config.config_file = temp_dir / "config.toml"
         mock_config_class.return_value = mock_config
-        
+
         runner = CliRunner()
         result = runner.invoke(cli, ["config", "--edit"])
-        
+
         assert result.exit_code == 0
         mock_subprocess.run.assert_called_once()
         # Check editor was called with config file
@@ -105,8 +103,14 @@ class TestCreateCommand:
     @patch("aifleet.commands.create.WorktreeManager")
     @patch("aifleet.commands.create.StateManager")
     @patch("aifleet.commands.create.ConfigManager")
-    def test_create_basic(self, mock_config_class, mock_state_class, 
-                         mock_worktree_class, mock_tmux_class, temp_dir):
+    def test_create_basic(
+        self,
+        mock_config_class,
+        mock_state_class,
+        mock_worktree_class,
+        mock_tmux_class,
+        temp_dir,
+    ):
         """Test basic agent creation."""
         # Mock config
         mock_config = MagicMock()
@@ -119,17 +123,19 @@ class TestCreateCommand:
         mock_config.setup_commands = []
         mock_config.quick_setup = False
         mock_config_class.return_value = mock_config
-        
+
         # Mock state
         mock_state = MagicMock()
         mock_state.get_agent.return_value = None  # No existing agent
         mock_state_class.return_value = mock_state
-        
+
         # Mock worktree
         mock_worktree = MagicMock()
-        mock_worktree.setup_worktree.return_value = temp_dir / "worktrees" / "test-branch"
+        mock_worktree.setup_worktree.return_value = (
+            temp_dir / "worktrees" / "test-branch"
+        )
         mock_worktree_class.return_value = mock_worktree
-        
+
         # Mock tmux
         mock_tmux = MagicMock()
         mock_session = MagicMock()
@@ -138,13 +144,15 @@ class TestCreateCommand:
         mock_tmux.send_command.return_value = True
         mock_tmux.get_session_info.return_value = {"pid": 12345}
         mock_tmux_class.return_value = mock_tmux
-        
+
         runner = CliRunner()
-        result = runner.invoke(cli, ["create", "test-branch", "--prompt", "Test prompt"])
-        
+        result = runner.invoke(
+            cli, ["create", "test-branch", "--prompt", "Test prompt"]
+        )
+
         assert result.exit_code == 0
         assert "Agent created successfully" in result.output
-        
+
         # Verify calls
         mock_worktree.setup_worktree.assert_called_once()
         mock_tmux.create_session.assert_called_once()
@@ -159,10 +167,10 @@ class TestCreateCommand:
         mock_state = MagicMock()
         mock_state.get_agent.return_value = MagicMock()  # Agent exists
         mock_state_class.return_value = mock_state
-        
+
         runner = CliRunner()
         result = runner.invoke(cli, ["create", "existing-branch"])
-        
+
         assert result.exit_code == 1
         assert "Agent already exists" in result.output
 
@@ -179,15 +187,15 @@ class TestListCommand:
         mock_state = MagicMock()
         mock_state.list_agents.return_value = []
         mock_state_class.return_value = mock_state
-        
+
         # Mock tmux
         mock_tmux = MagicMock()
         mock_tmux.list_sessions.return_value = []
         mock_tmux_class.return_value = mock_tmux
-        
+
         runner = CliRunner()
         result = runner.invoke(cli, ["list"])
-        
+
         assert result.exit_code == 0
         assert "No active agents" in result.output
 
@@ -195,13 +203,14 @@ class TestListCommand:
     @patch("aifleet.commands.list.TmuxManager")
     @patch("aifleet.commands.list.StateManager")
     @patch("aifleet.commands.list.ConfigManager")
-    def test_list_agents(self, mock_config_class, mock_state_class, 
-                        mock_tmux_class, mock_psutil):
+    def test_list_agents(
+        self, mock_config_class, mock_state_class, mock_tmux_class, mock_psutil
+    ):
         """Test listing active agents."""
         from datetime import datetime
-        
+
         from aifleet.state import Agent
-        
+
         # Mock agents
         agents = [
             Agent(
@@ -211,7 +220,7 @@ class TestListCommand:
                 pid=12345,
                 batch_id="batch1",
                 agent="claude",
-                created_at=datetime.now().isoformat()
+                created_at=datetime.now().isoformat(),
             ),
             Agent(
                 branch="branch2",
@@ -220,50 +229,51 @@ class TestListCommand:
                 pid=12346,
                 batch_id="batch1",
                 agent="claude",
-                created_at=datetime.now().isoformat()
-            )
+                created_at=datetime.now().isoformat(),
+            ),
         ]
-        
+
         mock_state = MagicMock()
         mock_state.list_agents.return_value = agents
         mock_state_class.return_value = mock_state
-        
+
         # Mock tmux sessions
         mock_tmux = MagicMock()
         mock_tmux.list_sessions.return_value = [
             ("ai_branch1", 12345),
-            ("ai_branch2", 12346)
+            ("ai_branch2", 12346),
         ]
         mock_tmux_class.return_value = mock_tmux
-        
+
         # Mock process stats
         mock_process = MagicMock()
         mock_process.cpu_percent.return_value = 10.5
         mock_process.memory_info.return_value.rss = 100 * 1024 * 1024  # 100 MB
         mock_psutil.Process.return_value = mock_process
-        
+
         runner = CliRunner()
         result = runner.invoke(cli, ["list"])
-        
+
         assert result.exit_code == 0
         assert "BRANCH" in result.output
         assert "branch1" in result.output
         assert "branch2" in result.output
         assert "active" in result.output
         assert "10.5" in result.output  # CPU
-        assert "100" in result.output   # Memory
+        assert "100" in result.output  # Memory
 
     @patch("aifleet.commands.list.psutil")
     @patch("aifleet.commands.list.TmuxManager")
     @patch("aifleet.commands.list.StateManager")
     @patch("aifleet.commands.list.ConfigManager")
-    def test_list_grouped(self, mock_config_class, mock_state_class,
-                         mock_tmux_class, mock_psutil):
+    def test_list_grouped(
+        self, mock_config_class, mock_state_class, mock_tmux_class, mock_psutil
+    ):
         """Test listing agents grouped by batch."""
         from datetime import datetime
-        
+
         from aifleet.state import Agent
-        
+
         # Mock agents in different batches
         agents = [
             Agent(
@@ -273,31 +283,31 @@ class TestListCommand:
                 pid=12345 + i,
                 batch_id="batch1" if i < 2 else "batch2",
                 agent="claude",
-                created_at=datetime.now().isoformat()
+                created_at=datetime.now().isoformat(),
             )
             for i in range(4)
         ]
-        
+
         mock_state = MagicMock()
         mock_state.list_agents.return_value = agents
         mock_state_class.return_value = mock_state
-        
+
         # Mock tmux
         mock_tmux = MagicMock()
         mock_tmux.list_sessions.return_value = [
             (f"ai_branch{i}", 12345 + i) for i in range(4)
         ]
         mock_tmux_class.return_value = mock_tmux
-        
+
         # Mock process stats
         mock_psutil.Process.side_effect = lambda pid: MagicMock(
             cpu_percent=lambda interval: 5.0,
-            memory_info=lambda: MagicMock(rss=50 * 1024 * 1024)
+            memory_info=lambda: MagicMock(rss=50 * 1024 * 1024),
         )
-        
+
         runner = CliRunner()
         result = runner.invoke(cli, ["list", "--grouped"])
-        
+
         assert result.exit_code == 0
         assert "batch1" in result.output
         assert "batch2" in result.output

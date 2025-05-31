@@ -1,6 +1,5 @@
 """Pytest configuration and fixtures."""
 
-import os
 import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -27,18 +26,19 @@ def git_repo(temp_dir):
     """Create a temporary git repository."""
     repo_path = temp_dir / "test-repo"
     repo_path.mkdir()
-    
+
     # Initialize git repo
     import subprocess
+
     subprocess.run(["git", "init"], cwd=repo_path, capture_output=True)
     subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=repo_path)
     subprocess.run(["git", "config", "user.name", "Test User"], cwd=repo_path)
-    
+
     # Create initial commit
     (repo_path / "README.md").write_text("# Test Repo")
     subprocess.run(["git", "add", "."], cwd=repo_path)
     subprocess.run(["git", "commit", "-m", "Initial commit"], cwd=repo_path)
-    
+
     return repo_path
 
 

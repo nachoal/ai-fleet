@@ -2,8 +2,6 @@
 
 from datetime import datetime
 
-import pytest
-
 from aifleet.state import Agent, StateManager
 
 
@@ -20,9 +18,9 @@ class TestAgent:
             batch_id="test-batch",
             agent="claude",
             created_at=datetime.now().isoformat(),
-            prompt="Test prompt"
+            prompt="Test prompt",
         )
-        
+
         assert agent.branch == "test-branch"
         assert agent.pid == 12345
         assert agent.prompt == "Test prompt"
@@ -36,9 +34,9 @@ class TestAgent:
             pid=None,  # Should be excluded
             batch_id="test-batch",
             agent="claude",
-            created_at=datetime.now().isoformat()
+            created_at=datetime.now().isoformat(),
         )
-        
+
         data = agent.to_dict()
         assert "branch" in data
         assert "pid" not in data  # None values excluded
@@ -51,9 +49,9 @@ class TestAgent:
             "session": "ai_test-branch",
             "batch_id": "test-batch",
             "agent": "claude",
-            "created_at": datetime.now().isoformat()
+            "created_at": datetime.now().isoformat(),
         }
-        
+
         agent = Agent.from_dict(data)
         assert agent.branch == "test-branch"
         assert agent.pid is None
@@ -65,7 +63,7 @@ class TestStateManager:
     def test_add_agent(self, temp_dir):
         """Test adding an agent."""
         state = StateManager(temp_dir)
-        
+
         agent = Agent(
             branch="test-branch",
             worktree="/path/to/worktree",
@@ -73,11 +71,11 @@ class TestStateManager:
             pid=12345,
             batch_id="test-batch",
             agent="claude",
-            created_at=datetime.now().isoformat()
+            created_at=datetime.now().isoformat(),
         )
-        
+
         state.add_agent(agent)
-        
+
         # Verify agent was added
         agents = state.list_agents()
         assert len(agents) == 1
@@ -86,7 +84,7 @@ class TestStateManager:
     def test_remove_agent(self, temp_dir):
         """Test removing an agent."""
         state = StateManager(temp_dir)
-        
+
         # Add agent
         agent = Agent(
             branch="test-branch",
@@ -95,18 +93,18 @@ class TestStateManager:
             pid=12345,
             batch_id="test-batch",
             agent="claude",
-            created_at=datetime.now().isoformat()
+            created_at=datetime.now().isoformat(),
         )
         state.add_agent(agent)
-        
+
         # Remove agent
         removed = state.remove_agent("test-branch")
         assert removed is True
-        
+
         # Verify removed
         agents = state.list_agents()
         assert len(agents) == 0
-        
+
         # Try removing non-existent
         removed = state.remove_agent("nonexistent")
         assert removed is False
@@ -114,7 +112,7 @@ class TestStateManager:
     def test_get_agent(self, temp_dir):
         """Test getting a specific agent."""
         state = StateManager(temp_dir)
-        
+
         # Add agents
         agent1 = Agent(
             branch="branch1",
@@ -123,7 +121,7 @@ class TestStateManager:
             pid=12345,
             batch_id="batch1",
             agent="claude",
-            created_at=datetime.now().isoformat()
+            created_at=datetime.now().isoformat(),
         )
         agent2 = Agent(
             branch="branch2",
@@ -132,18 +130,18 @@ class TestStateManager:
             pid=12346,
             batch_id="batch1",
             agent="claude",
-            created_at=datetime.now().isoformat()
+            created_at=datetime.now().isoformat(),
         )
-        
+
         state.add_agent(agent1)
         state.add_agent(agent2)
-        
+
         # Get specific agent
         found = state.get_agent("branch1")
         assert found is not None
         assert found.branch == "branch1"
         assert found.pid == 12345
-        
+
         # Get non-existent
         found = state.get_agent("nonexistent")
         assert found is None
@@ -151,7 +149,7 @@ class TestStateManager:
     def test_list_agents_by_batch(self, temp_dir):
         """Test listing agents filtered by batch."""
         state = StateManager(temp_dir)
-        
+
         # Add agents in different batches
         for i in range(3):
             agent = Agent(
@@ -161,25 +159,25 @@ class TestStateManager:
                 pid=12345 + i,
                 batch_id="batch1" if i < 2 else "batch2",
                 agent="claude",
-                created_at=datetime.now().isoformat()
+                created_at=datetime.now().isoformat(),
             )
             state.add_agent(agent)
-        
+
         # List all
         all_agents = state.list_agents()
         assert len(all_agents) == 3
-        
+
         # List by batch
         batch1_agents = state.list_agents(batch_id="batch1")
         assert len(batch1_agents) == 2
-        
+
         batch2_agents = state.list_agents(batch_id="batch2")
         assert len(batch2_agents) == 1
 
     def test_update_agent_pid(self, temp_dir):
         """Test updating agent PID."""
         state = StateManager(temp_dir)
-        
+
         # Add agent without PID
         agent = Agent(
             branch="test-branch",
@@ -188,18 +186,18 @@ class TestStateManager:
             pid=None,
             batch_id="batch",
             agent="claude",
-            created_at=datetime.now().isoformat()
+            created_at=datetime.now().isoformat(),
         )
         state.add_agent(agent)
-        
+
         # Update PID
         updated = state.update_agent_pid("test-branch", 99999)
         assert updated is True
-        
+
         # Verify update
         found = state.get_agent("test-branch")
         assert found.pid == 99999
-        
+
         # Update non-existent
         updated = state.update_agent_pid("nonexistent", 11111)
         assert updated is False
@@ -207,7 +205,7 @@ class TestStateManager:
     def test_get_batches(self, temp_dir):
         """Test getting unique batch IDs."""
         state = StateManager(temp_dir)
-        
+
         # Add agents with different batches
         batches = ["batch1", "batch2", "batch1", "batch3"]
         for i, batch_id in enumerate(batches):
@@ -218,10 +216,10 @@ class TestStateManager:
                 pid=12345 + i,
                 batch_id=batch_id,
                 agent="claude",
-                created_at=datetime.now().isoformat()
+                created_at=datetime.now().isoformat(),
             )
             state.add_agent(agent)
-        
+
         # Get unique batches
         unique_batches = state.get_batches()
         assert len(unique_batches) == 3
@@ -230,7 +228,7 @@ class TestStateManager:
     def test_remove_batch(self, temp_dir):
         """Test removing all agents in a batch."""
         state = StateManager(temp_dir)
-        
+
         # Add agents in batches
         for i in range(5):
             agent = Agent(
@@ -240,14 +238,14 @@ class TestStateManager:
                 pid=12345 + i,
                 batch_id="batch1" if i < 3 else "batch2",
                 agent="claude",
-                created_at=datetime.now().isoformat()
+                created_at=datetime.now().isoformat(),
             )
             state.add_agent(agent)
-        
+
         # Remove batch1
         removed_count = state.remove_batch("batch1")
         assert removed_count == 3
-        
+
         # Verify only batch2 remains
         remaining = state.list_agents()
         assert len(remaining) == 2
@@ -256,7 +254,7 @@ class TestStateManager:
     def test_reconcile_with_tmux(self, temp_dir):
         """Test reconciling state with tmux sessions."""
         state = StateManager(temp_dir)
-        
+
         # Add agents
         for i in range(3):
             agent = Agent(
@@ -266,18 +264,18 @@ class TestStateManager:
                 pid=12345 + i,
                 batch_id="batch",
                 agent="claude",
-                created_at=datetime.now().isoformat()
+                created_at=datetime.now().isoformat(),
             )
             state.add_agent(agent)
-        
+
         # Simulate only some sessions being active
         active_sessions = ["ai_branch0", "ai_branch2"]
-        
+
         # Reconcile
         removed = state.reconcile_with_tmux(active_sessions)
         assert len(removed) == 1
         assert "branch1" in removed
-        
+
         # Verify state
         remaining = state.list_agents()
         assert len(remaining) == 2
