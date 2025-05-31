@@ -3,7 +3,7 @@
 import shutil
 import subprocess
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional, Tuple
 
 
 class WorktreeManager:
@@ -21,8 +21,8 @@ class WorktreeManager:
         self.worktree_root.mkdir(parents=True, exist_ok=True)
 
     def _run_git(
-        self, args: list[str], cwd: Optional[Path] = None
-    ) -> tuple[bool, str, str]:
+        self, args: List[str], cwd: Optional[Path] = None
+    ) -> Tuple[bool, str, str]:
         """Run a git command.
 
         Args:
@@ -118,7 +118,7 @@ class WorktreeManager:
 
         return True
 
-    def list_worktrees(self) -> list[tuple[str, str]]:
+    def list_worktrees(self) -> List[Tuple[str, str]]:
         """List all worktrees.
 
         Returns:
@@ -143,7 +143,7 @@ class WorktreeManager:
 
         return worktrees
 
-    def copy_credential_files(self, worktree_path: Path, files: list[str]) -> list[str]:
+    def copy_credential_files(self, worktree_path: Path, files: List[str]) -> List[str]:
         """Copy credential files from main repo to worktree.
 
         Args:
@@ -176,7 +176,7 @@ class WorktreeManager:
 
         return copied
 
-    def run_setup_commands(self, worktree_path: Path, commands: list[str]) -> bool:
+    def run_setup_commands(self, worktree_path: Path, commands: List[str]) -> bool:
         """Run setup commands in worktree.
 
         Args:
@@ -214,8 +214,8 @@ class WorktreeManager:
     def setup_worktree(
         self,
         branch: str,
-        credential_files: list[str],
-        setup_commands: list[str],
+        credential_files: List[str],
+        setup_commands: List[str],
         quick_setup: bool = False,
     ) -> Optional[Path]:
         """Create and setup a worktree.

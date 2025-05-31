@@ -2,7 +2,7 @@
 
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 import toml
 
@@ -29,7 +29,7 @@ class ConfigManager:
         """
         self.config_dir = config_dir or Path.home() / ".ai_fleet"
         self.config_file = self.config_dir / "config.toml"
-        self._config: dict[str, Any] = {}
+        self._config: Dict[str, Any] = {}
         self._ensure_config_dir()
         self.load()
 
@@ -102,7 +102,7 @@ class ConfigManager:
         # Set the value
         config[parts[-1]] = value
 
-    def validate(self) -> list[str]:
+    def validate(self) -> List[str]:
         """Validate configuration.
 
         Returns:
@@ -158,29 +158,31 @@ class ConfigManager:
     @property
     def tmux_prefix(self) -> str:
         """Get tmux session prefix."""
-        return self.get("tmux_prefix", "ai_")
+        return str(self.get("tmux_prefix", "ai_"))
 
     @property
     def default_agent(self) -> str:
         """Get default agent."""
-        return self.get("default_agent", "claude")
+        return str(self.get("default_agent", "claude"))
 
     @property
     def claude_flags(self) -> str:
         """Get claude flags."""
-        return self.get("claude_flags", "")
+        return str(self.get("claude_flags", ""))
 
     @property
-    def credential_files(self) -> list[str]:
+    def credential_files(self) -> List[str]:
         """Get credential files to copy."""
-        return self.get("credential_files", [])
+        result = self.get("credential_files", [])
+        return result if isinstance(result, list) else []
 
     @property
-    def setup_commands(self) -> list[str]:
+    def setup_commands(self) -> List[str]:
         """Get setup commands to run."""
-        return self.get("setup_commands", [])
+        result = self.get("setup_commands", [])
+        return result if isinstance(result, list) else []
 
     @property
     def quick_setup(self) -> bool:
         """Get quick setup mode."""
-        return self.get("quick_setup", False)
+        return bool(self.get("quick_setup", False))

@@ -1,7 +1,7 @@
 """List command for AI Fleet."""
 
 from datetime import datetime
-from typing import Optional
+from typing import Dict, List, Optional, Tuple, Union
 
 import click
 import psutil
@@ -12,7 +12,7 @@ from ..tmux import TmuxManager
 from ..utils import format_duration
 
 
-def get_process_stats(pid: Optional[int]) -> tuple[float, float]:
+def get_process_stats(pid: Optional[int]) -> Tuple[float, float]:
     """Get CPU and memory usage for a process.
 
     Returns:
@@ -58,7 +58,7 @@ def list(grouped: bool, all: bool):
         return
 
     # Collect agent data
-    agent_data = []
+    agent_data: List[Dict[str, Union[str, float]]] = []
     for agent in agents:
         # Check if session is active
         session_active = agent.session in active_sessions
@@ -110,30 +110,34 @@ def list(grouped: bool, all: bool):
         status_color = "green" if data["status"] == "active" else "red"
         status_text = click.style(data["status"], fg=status_color)
 
-        click.echo(
-            "{:<25} {:<15} {:<8} {} {:<8.1f} {:<8.0f} {:<16}".format(
-                data["branch"][:25],
-                data["batch_id"][:15],
-                data["agent"],
-                status_text,
-                data["cpu"],
-                data["memory"],
-                data["uptime"],
-            )
+        # Format the row with proper padding
+        row = "{:<25} {:<15} {:<8} {:<8} {:<8.1f} {:<8.0f} {:<16}".format(
+            str(data["branch"])[:25],
+            str(data["batch_id"])[:15],
+            str(data["agent"]),
+            str(data["status"]),  # Use plain text for format string
+            float(data["cpu"]),
+            float(data["memory"]),
+            str(data["uptime"]),
         )
+        # Replace the status part with styled version
+        parts = row.split()
+        parts[3] = status_text
+        click.echo(" ".join(parts))
 
     # Summary
     click.echo("\n" + "-" * 100)
     active_count = sum(1 for d in agent_data if d["status"] == "active")
-    total_cpu = sum(d["cpu"] for d in agent_data)
-    total_memory = sum(d["memory"] for d in agent_data)
+    total_cpu = sum(float(d["cpu"]) for d in agent_data)
+    total_memory = sum(float(d["memory"]) for d in agent_data)
 
     click.echo(f"Total: {len(agent_data)} agents ({active_count} active)")
     click.echo(f"Resources: {total_cpu:.1f}% CPU, {total_memory:.0f} MB RAM")
 
     if grouped:
-        batch_counts = {}
+        batch_counts: Dict[str, int] = {}
         for data in agent_data:
-            batch_counts[data["batch_id"]] = batch_counts.get(data["batch_id"], 0) + 1
+            batch_id = str(data["batch_id"])
+            batch_counts[batch_id] = batch_counts.get(batch_id, 0) + 1
         batches_summary = ", ".join(f"{b}: {c}" for b, c in batch_counts.items())
         click.echo(f"Batches: {len(batch_counts)} ({batches_summary})")

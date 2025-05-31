@@ -5,7 +5,7 @@ import json
 import os
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -21,12 +21,12 @@ class Agent:
     created_at: str
     prompt: Optional[str] = None
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {k: v for k, v in asdict(self).items() if v is not None}
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "Agent":
+    def from_dict(cls, data: Dict[str, Any]) -> "Agent":
         """Create from dictionary."""
         return cls(**data)
 
@@ -48,7 +48,7 @@ class StateManager:
         """Ensure state directory exists."""
         self.state_dir.mkdir(parents=True, exist_ok=True)
 
-    def _load_state(self) -> list[dict[str, Any]]:
+    def _load_state(self) -> List[Dict[str, Any]]:
         """Load state from disk with file locking."""
         if not self.state_file.exists():
             return []
@@ -66,7 +66,7 @@ class StateManager:
             print(f"Error loading state: {e}")
             return []
 
-    def _save_state(self, agents: list[dict[str, Any]]) -> None:
+    def _save_state(self, agents: List[Dict[str, Any]]) -> None:
         """Save state to disk with file locking."""
         temp_file = self.state_file.with_suffix(".tmp")
 
@@ -130,7 +130,7 @@ class StateManager:
 
         return None
 
-    def list_agents(self, batch_id: Optional[str] = None) -> list[Agent]:
+    def list_agents(self, batch_id: Optional[str] = None) -> List[Agent]:
         """List all agents, optionally filtered by batch_id."""
         agents = self._load_state()
 
@@ -163,7 +163,7 @@ class StateManager:
 
         return updated
 
-    def get_batches(self) -> list[str]:
+    def get_batches(self) -> List[str]:
         """Get list of unique batch IDs."""
         agents = self._load_state()
         batch_ids = set()
@@ -195,7 +195,7 @@ class StateManager:
 
         return removed_count
 
-    def reconcile_with_tmux(self, active_sessions: list[str]) -> list[str]:
+    def reconcile_with_tmux(self, active_sessions: List[str]) -> List[str]:
         """Reconcile state with actual tmux sessions.
 
         Args:
@@ -205,7 +205,7 @@ class StateManager:
             List of branches that were removed from state
         """
         agents = self._load_state()
-        removed_branches = []
+        removed_branches: List[str] = []
 
         # Filter out agents whose sessions no longer exist
         active_agents = []
@@ -213,7 +213,9 @@ class StateManager:
             if agent.get("session") in active_sessions:
                 active_agents.append(agent)
             else:
-                removed_branches.append(agent.get("branch"))
+                branch = agent.get("branch")
+                if branch is not None:
+                    removed_branches.append(branch)
 
         if removed_branches:
             self._save_state(active_agents)

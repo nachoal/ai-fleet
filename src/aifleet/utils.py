@@ -3,6 +3,7 @@
 import random
 import string
 from datetime import datetime
+from typing import List, Tuple
 
 import click
 
@@ -15,7 +16,7 @@ def generate_batch_id() -> str:
     return f"{date_part}-{random_part}"
 
 
-def parse_branch_prompt_pairs(args: list[str]) -> list[tuple[str, str]]:
+def parse_branch_prompt_pairs(args: List[str]) -> List[Tuple[str, str]]:
     """Parse branch:prompt pairs from command arguments.
 
     Args:

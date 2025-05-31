@@ -62,7 +62,9 @@ select = [
     "I",    # isort
     "B",    # flake8-bugbear
     "C4",   # flake8-comprehensions
-    "UP",   # pyupgrade
+]
+ignore = [
+    "UP",   # pyupgrade - disabled to maintain Python 3.9 compatibility
 ]
 
 [tool.mypy]
@@ -70,3 +72,8 @@ python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
+
+[tool.uv]
+dev-dependencies = [
+    "types-toml>=0.10.8.20240310",
+]

@@ -47,6 +47,7 @@ class TestAgent:
             "branch": "test-branch",
             "worktree": "/path/to/worktree",
             "session": "ai_test-branch",
+            "pid": None,
             "batch_id": "test-batch",
             "agent": "claude",
             "created_at": datetime.now().isoformat(),

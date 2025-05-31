@@ -1,7 +1,7 @@
 """Tmux session management for AI Fleet."""
 
 import subprocess
-from typing import Optional
+from typing import List, Optional, Tuple
 
 import libtmux
 
@@ -162,7 +162,7 @@ class TmuxManager:
             print(f"Failed to kill session: {e}")
             return False
 
-    def list_sessions(self) -> list[tuple[str, Optional[int]]]:
+    def list_sessions(self) -> List[Tuple[str, Optional[int]]]:
         """List all AI Fleet tmux sessions.
 
         Returns:

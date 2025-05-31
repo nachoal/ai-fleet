@@ -77,9 +77,9 @@ class TestCLI:
         assert "Configuration errors:" in result.output
         assert "repo_root does not exist" in result.output
 
-    @patch("aifleet.cli.subprocess")
+    @patch("subprocess.run")
     @patch("aifleet.cli.ConfigManager")
-    def test_config_edit(self, mock_config_class, mock_subprocess, temp_dir):
+    def test_config_edit(self, mock_config_class, mock_subprocess_run, temp_dir):
         """Test editing configuration."""
         # Mock config
         mock_config = MagicMock()
@@ -90,9 +90,9 @@ class TestCLI:
         result = runner.invoke(cli, ["config", "--edit"])
 
         assert result.exit_code == 0
-        mock_subprocess.run.assert_called_once()
+        mock_subprocess_run.assert_called_once()
         # Check editor was called with config file
-        call_args = mock_subprocess.run.call_args[0][0]
+        call_args = mock_subprocess_run.call_args[0][0]
         assert str(mock_config.config_file) in call_args
 
 

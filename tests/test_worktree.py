@@ -88,8 +88,9 @@ class TestWorktreeManager:
 
         # Check our worktrees are listed
         branches = [branch for _, branch in worktrees]
-        assert "branch1" in branches
-        assert "branch2" in branches
+        # Handle both short and full branch names
+        assert any("branch1" in b for b in branches)
+        assert any("branch2" in b for b in branches)
 
     def test_copy_credential_files(self, git_repo, temp_dir):
         """Test copying credential files."""
