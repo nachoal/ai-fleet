@@ -12,8 +12,8 @@ dependencies = [
 ]
 
 [project.scripts]
-fleet = "aifleet.cli:main"
-flt = "aifleet.cli:main"
+fleet = "aifleet.cli:cli"
+flt = "aifleet.cli:flt"
 
 [build-system]
 requires = ["hatchling"]
