@@ -32,13 +32,12 @@ class TestWorktreeManager:
         """Test creating worktree with existing branch."""
         worktree_mgr = WorktreeManager(git_repo, temp_dir / "worktrees")
 
-        # Create branch first
+        # Create branch and immediately switch back to main
         subprocess.run(
-            ["git", "checkout", "-b", "existing-branch"],
+            ["git", "branch", "existing-branch"],
             cwd=git_repo,
             capture_output=True,
         )
-        subprocess.run(["git", "checkout", "main"], cwd=git_repo, capture_output=True)
 
         # Create worktree with existing branch
         path = worktree_mgr.create_worktree("existing-branch")
