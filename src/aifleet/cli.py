@@ -15,7 +15,7 @@ def main():
 
 @main.command()
 @click.option("--edit", "-e", is_flag=True, help="Edit config")
-@click.option("--validate", "-v", is_flag=True, help="Validate config")  
+@click.option("--validate", "-v", is_flag=True, help="Validate config")
 def config(edit, validate):
     """Manage configuration."""
     if edit:
