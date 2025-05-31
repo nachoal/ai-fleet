@@ -32,6 +32,7 @@ dev = [
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-mock" },
+    { name = "ruff" },
     { name = "types-toml" },
 ]
 
@@ -57,6 +58,7 @@ dev = [
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "pytest-cov", specifier = ">=6.1.1" },
     { name = "pytest-mock", specifier = ">=3.14.1" },
+    { name = "ruff", specifier = ">=0.11.12" },
     { name = "types-toml", specifier = ">=0.10.8.20240310" },
 ]
 

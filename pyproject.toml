@@ -80,4 +80,5 @@ dev-dependencies = [
     "pytest-cov>=6.1.1",
     "pytest-mock>=3.14.1",
     "types-toml>=0.10.8.20240310",
+    "ruff>=0.11.12",
 ]
