@@ -1,0 +1,61 @@
+# Lefthook configuration for AI Fleet
+# https://lefthook.dev/configuration/
+
+# Run before committing
+pre-commit:
+  parallel: true
+  jobs:
+    # Lint Python files with Ruff
+    - name: ruff-lint
+      run: uv run ruff check --fix {staged_files}
+      glob: "*.py"
+      
+    # Format Python files with Ruff
+    - name: ruff-format
+      run: uv run ruff format {staged_files}
+      glob: "*.py"
+      
+    # Check YAML files
+    - name: check-yaml
+      run: uv run python -m yaml -c {staged_files}
+      glob: "*.{yml,yaml}"
+      
+    # Check TOML files
+    - name: check-toml
+      run: uv run python -c "import toml; toml.load('{staged_files}')"
+      glob: "*.toml"
+      
+    # Remove trailing whitespace
+    - name: trailing-whitespace
+      run: sed -i '' 's/[[:space:]]*$//' {staged_files}
+      glob: "*"
+      exclude: "*.{png,jpg,jpeg,gif,ico}"
+
+# Run before pushing
+pre-push:
+  parallel: true
+  jobs:
+    # Run full test suite
+    - name: pytest
+      run: uv run pytest --cov=aifleet --cov-report=term-missing
+      
+    # Run type checking
+    - name: mypy
+      run: uv run mypy src/aifleet --ignore-missing-imports
+      
+    # Check that code is properly formatted
+    - name: ruff-format-check
+      run: uv run ruff format --check .
+      
+    # Run linting without fixes
+    - name: ruff-lint-check
+      run: uv run ruff check .
+
+# Configuration
+skip_output:
+  - meta
+  - success
+
+output:
+  - failure
+  - summary
