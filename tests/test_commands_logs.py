@@ -45,8 +45,12 @@ class TestLogsCommand:
                     assert result.exit_code == 0
 
                     # Verify calls
-                    mock_state.return_value.get_agent.assert_called_once_with("test-branch")
-                    mock_tmux.return_value.session_exists.assert_called_once_with("ai_test-branch")
+                    mock_state.return_value.get_agent.assert_called_once_with(
+                        "test-branch"
+                    )
+                    mock_tmux.return_value.session_exists.assert_called_once_with(
+                        "ai_test-branch"
+                    )
                     mock_tmux.return_value.get_session_output.assert_called_once_with(
                         "ai_test-branch", 50
                     )
@@ -101,7 +105,9 @@ class TestLogsCommand:
                     runner = CliRunner()
                     result = runner.invoke(logs, ["nonexistent", "--lines", "50"])
                     assert result.exit_code == 1
-                    mock_state.return_value.get_agent.assert_called_once_with("nonexistent")
+                    mock_state.return_value.get_agent.assert_called_once_with(
+                        "nonexistent"
+                    )
 
     def test_logs_session_not_found(self, temp_dir):
         """Test logs when tmux session doesn't exist."""
@@ -132,7 +138,9 @@ class TestLogsCommand:
                     result = runner.invoke(logs, ["test-branch", "--lines", "50"])
                     assert result.exit_code == 1
                     # Should clean up state
-                    mock_state.return_value.remove_agent.assert_called_once_with("test-branch")
+                    mock_state.return_value.remove_agent.assert_called_once_with(
+                        "test-branch"
+                    )
 
     def test_logs_no_output(self, temp_dir):
         """Test logs when no output available."""

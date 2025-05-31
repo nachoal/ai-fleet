@@ -45,8 +45,12 @@ class TestPromptCommand:
                     assert result.exit_code == 0
 
                     # Verify calls
-                    mock_state.return_value.get_agent.assert_called_once_with("test-branch")
-                    mock_tmux.return_value.session_exists.assert_called_once_with("ai_test-branch")
+                    mock_state.return_value.get_agent.assert_called_once_with(
+                        "test-branch"
+                    )
+                    mock_tmux.return_value.session_exists.assert_called_once_with(
+                        "ai_test-branch"
+                    )
                     mock_tmux.return_value.send_command.assert_called_once_with(
                         "ai_test-branch", "New prompt message"
                     )
@@ -64,7 +68,9 @@ class TestPromptCommand:
                     runner = CliRunner()
                     result = runner.invoke(prompt, ["nonexistent", "Message"])
                     assert result.exit_code == 1
-                    mock_state.return_value.get_agent.assert_called_once_with("nonexistent")
+                    mock_state.return_value.get_agent.assert_called_once_with(
+                        "nonexistent"
+                    )
 
     def test_prompt_session_not_found(self, temp_dir):
         """Test prompt when tmux session doesn't exist."""
@@ -95,7 +101,9 @@ class TestPromptCommand:
                     result = runner.invoke(prompt, ["test-branch", "Message"])
                     assert result.exit_code == 1
                     # Should clean up state
-                    mock_state.return_value.remove_agent.assert_called_once_with("test-branch")
+                    mock_state.return_value.remove_agent.assert_called_once_with(
+                        "test-branch"
+                    )
 
     def test_prompt_send_failed(self, temp_dir):
         """Test prompt when send command fails."""

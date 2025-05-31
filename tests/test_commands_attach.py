@@ -42,9 +42,15 @@ class TestAttachCommand:
                     assert result.exit_code == 0
 
                     # Verify calls
-                    mock_state.return_value.get_agent.assert_called_once_with("test-branch")
-                    mock_tmux.return_value.session_exists.assert_called_once_with("ai_test-branch")
-                    mock_tmux.return_value.attach_session.assert_called_once_with("ai_test-branch")
+                    mock_state.return_value.get_agent.assert_called_once_with(
+                        "test-branch"
+                    )
+                    mock_tmux.return_value.session_exists.assert_called_once_with(
+                        "ai_test-branch"
+                    )
+                    mock_tmux.return_value.attach_session.assert_called_once_with(
+                        "ai_test-branch"
+                    )
 
     def test_attach_agent_not_found(self, temp_dir):
         """Test attach when agent doesn't exist."""
@@ -59,7 +65,9 @@ class TestAttachCommand:
                     runner = CliRunner()
                     result = runner.invoke(attach, ["nonexistent"])
                     assert result.exit_code == 1
-                    mock_state.return_value.get_agent.assert_called_once_with("nonexistent")
+                    mock_state.return_value.get_agent.assert_called_once_with(
+                        "nonexistent"
+                    )
 
     def test_attach_session_not_found(self, temp_dir):
         """Test attach when tmux session doesn't exist."""
@@ -90,4 +98,6 @@ class TestAttachCommand:
                     result = runner.invoke(attach, ["test-branch"])
                     assert result.exit_code == 1
                     # Should clean up state
-                    mock_state.return_value.remove_agent.assert_called_once_with("test-branch")
+                    mock_state.return_value.remove_agent.assert_called_once_with(
+                        "test-branch"
+                    )
