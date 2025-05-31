@@ -246,7 +246,7 @@ fleet list --grouped
 ## Post-MVP Enhancements
 
 1. **Configuration Templates**: Project-specific setup templates
-2. **Agent Templates**: Pre-configured prompts for common tasks  
+2. **Agent Templates**: Pre-configured prompts for common tasks
 3. **Metrics Dashboard**: Web UI for monitoring agents
 4. **Cost Tracking**: Track token usage per agent
 5. **Integration**: Linear/GitHub issue fetching
