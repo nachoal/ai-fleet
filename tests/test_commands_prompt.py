@@ -3,7 +3,6 @@
 from datetime import datetime
 from unittest.mock import patch
 
-import pytest
 from click.testing import CliRunner
 
 from aifleet.commands.prompt import prompt
@@ -40,7 +39,9 @@ class TestPromptCommand:
 
                     # Run command
                     runner = CliRunner()
-                    result = runner.invoke(prompt, ["test-branch", "New prompt message"])
+                    result = runner.invoke(
+                        prompt, ["test-branch", "New prompt message"]
+                    )
                     assert result.exit_code == 0
 
                     # Verify calls

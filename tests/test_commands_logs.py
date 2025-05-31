@@ -3,7 +3,6 @@
 from datetime import datetime
 from unittest.mock import patch
 
-import pytest
 from click.testing import CliRunner
 
 from aifleet.commands.logs import logs
