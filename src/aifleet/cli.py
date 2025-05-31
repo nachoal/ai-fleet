@@ -1,19 +1,18 @@
 """AI Fleet CLI entry point."""
 
 import sys
-
 import click
 
+from .config import ConfigManager
 from .commands.create import create
 from .commands.list import list
-from .config import ConfigManager
 
 
 @click.group()
 @click.version_option(package_name="ai-fleet")
 def cli():
     """AI Fleet - Manage AI coding agents in parallel.
-
+    
     Spin up and command a fleet of AI developer agents from your terminal.
     Each agent runs in its own git worktree with an isolated tmux session.
     """
@@ -30,11 +29,10 @@ def cli():
 def config(edit: bool, validate: bool):
     """Manage AI Fleet configuration."""
     config_mgr = ConfigManager()
-
+    
     if edit:
-        import os
         import subprocess
-
+        import os
         editor = os.environ.get("EDITOR", "nano")
         subprocess.run([editor, str(config_mgr.config_file)])
     elif validate:
@@ -50,7 +48,7 @@ def config(edit: bool, validate: bool):
         # Show current config
         click.echo(f"Configuration file: {config_mgr.config_file}")
         click.echo("\nCurrent settings:")
-        with open(config_mgr.config_file) as f:
+        with open(config_mgr.config_file, "r") as f:
             click.echo(f.read())
 
 
