@@ -12,6 +12,7 @@ from .commands.list import list
 from .commands.logs import logs
 from .commands.multi import multi
 from .commands.prompt import prompt
+from .commands.update import update
 from .config import ConfigManager
 
 
@@ -69,6 +70,7 @@ cli.add_command(logs)
 cli.add_command(kill)
 cli.add_command(fanout)
 cli.add_command(multi)
+cli.add_command(update)
 
 
 # Create flt alias

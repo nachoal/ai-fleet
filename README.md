@@ -213,6 +213,17 @@ fleet config --edit    # Open in $EDITOR
 fleet config --validate # Check configuration
 ```
 
+#### `fleet update [--check] [--force]`
+Check for and install updates to AI Fleet.
+
+```bash
+fleet update           # Check and install updates
+fleet update --check   # Only check for updates
+fleet update --force   # Force check (bypass cache)
+```
+
+The update command automatically detects your installation method (pipx, pip, uv, or source) and uses the appropriate update mechanism.
+
 ---
 
 ## Configuration
