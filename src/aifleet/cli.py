@@ -4,8 +4,14 @@ import sys
 
 import click
 
+from .commands.attach import attach
 from .commands.create import create
+from .commands.fanout import fanout
+from .commands.kill import kill
 from .commands.list import list
+from .commands.logs import logs
+from .commands.multi import multi
+from .commands.prompt import prompt
 from .config import ConfigManager
 
 
@@ -57,6 +63,12 @@ def config(edit: bool, validate: bool):
 # Add commands to CLI
 cli.add_command(create)
 cli.add_command(list)
+cli.add_command(prompt)
+cli.add_command(attach)
+cli.add_command(logs)
+cli.add_command(kill)
+cli.add_command(fanout)
+cli.add_command(multi)
 
 
 # Create flt alias
