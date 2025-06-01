@@ -65,15 +65,15 @@ class TestLogsCommand:
             with patch("aifleet.commands.logs.ensure_project_config") as mock_ensure_config_logs:
                 with patch("aifleet.commands.logs.StateManager") as mock_state:
                     with patch("aifleet.commands.logs.TmuxManager") as mock_tmux:
-                    # Setup mocks - patch both base and logs module
-                    mock_config = mock_ensure_config_base.return_value
-                    mock_ensure_config_logs.return_value = mock_config
-                    mock_config.repo_root = temp_dir
-                    mock_config.project_root = temp_dir
-                    mock_config.tmux_prefix = "ai_"
+                        # Setup mocks - patch both base and logs module
+                        mock_config = mock_ensure_config_base.return_value
+                        mock_ensure_config_logs.return_value = mock_config
+                        mock_config.repo_root = temp_dir
+                        mock_config.project_root = temp_dir
+                        mock_config.tmux_prefix = "ai_"
 
-                    # Mock agent
-                    agent = Agent(
+                        # Mock agent
+                        agent = Agent(
                         branch="test-branch",
                         worktree="/path/worktree",
                         session="ai_test-branch",
@@ -127,15 +127,15 @@ class TestLogsCommand:
             with patch("aifleet.commands.logs.ensure_project_config") as mock_ensure_config_logs:
                 with patch("aifleet.commands.logs.StateManager") as mock_state:
                     with patch("aifleet.commands.logs.TmuxManager") as mock_tmux:
-                    # Setup mocks - patch both base and logs module
-                    mock_config = mock_ensure_config_base.return_value
-                    mock_ensure_config_logs.return_value = mock_config
-                    mock_config.repo_root = temp_dir
-                    mock_config.project_root = temp_dir
-                    mock_config.tmux_prefix = "ai_"
+                        # Setup mocks - patch both base and logs module
+                        mock_config = mock_ensure_config_base.return_value
+                        mock_ensure_config_logs.return_value = mock_config
+                        mock_config.repo_root = temp_dir
+                        mock_config.project_root = temp_dir
+                        mock_config.tmux_prefix = "ai_"
 
-                    # Mock agent
-                    agent = Agent(
+                        # Mock agent
+                        agent = Agent(
                         branch="test-branch",
                         worktree="/path/worktree",
                         session="ai_test-branch",
@@ -164,15 +164,15 @@ class TestLogsCommand:
             with patch("aifleet.commands.logs.ensure_project_config") as mock_ensure_config_logs:
                 with patch("aifleet.commands.logs.StateManager") as mock_state:
                     with patch("aifleet.commands.logs.TmuxManager") as mock_tmux:
-                    # Setup mocks - patch both base and logs module
-                    mock_config = mock_ensure_config_base.return_value
-                    mock_ensure_config_logs.return_value = mock_config
-                    mock_config.repo_root = temp_dir
-                    mock_config.project_root = temp_dir
-                    mock_config.tmux_prefix = "ai_"
+                        # Setup mocks - patch both base and logs module
+                        mock_config = mock_ensure_config_base.return_value
+                        mock_ensure_config_logs.return_value = mock_config
+                        mock_config.repo_root = temp_dir
+                        mock_config.project_root = temp_dir
+                        mock_config.tmux_prefix = "ai_"
 
-                    # Mock agent
-                    agent = Agent(
+                        # Mock agent
+                        agent = Agent(
                         branch="test-branch",
                         worktree="/path/worktree",
                         session="ai_test-branch",

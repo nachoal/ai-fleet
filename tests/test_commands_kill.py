@@ -238,19 +238,19 @@ class TestKillCommand:
         with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config_base:
             with patch("aifleet.commands.kill.ensure_project_config") as mock_ensure_config_kill:
                 with patch("aifleet.commands.kill.StateManager") as mock_state:
-                with patch("aifleet.commands.kill.TmuxManager") as _:
-                    with patch("aifleet.commands.kill.WorktreeManager") as _:
-                        # Setup mocks - patch both base and kill module
-                        mock_config = mock_ensure_config_base.return_value
-                        mock_ensure_config_kill.return_value = mock_config
-                        mock_config.repo_root = temp_dir
-                        mock_config.project_root = temp_dir
-                        mock_state.return_value.list_agents.return_value = []
+                    with patch("aifleet.commands.kill.TmuxManager") as _:
+                        with patch("aifleet.commands.kill.WorktreeManager") as _:
+                            # Setup mocks - patch both base and kill module
+                            mock_config = mock_ensure_config_base.return_value
+                            mock_ensure_config_kill.return_value = mock_config
+                            mock_config.repo_root = temp_dir
+                            mock_config.project_root = temp_dir
+                            mock_state.return_value.list_agents.return_value = []
 
-                        # Run command and expect exit
-                        runner = CliRunner()
-                        result = runner.invoke(kill, ["nonexistent"])
-                        assert result.exit_code == 1
+                            # Run command and expect exit
+                            runner = CliRunner()
+                            result = runner.invoke(kill, ["nonexistent"])
+                            assert result.exit_code == 1
 
     def test_kill_cancelled_by_user(self, temp_dir):
         """Test kill cancelled by user confirmation."""
@@ -260,29 +260,29 @@ class TestKillCommand:
                     with patch("aifleet.commands.kill.TmuxManager") as mock_tmux:
                         with patch("aifleet.commands.kill.WorktreeManager") as _:
                             with patch(
-                            "aifleet.commands.kill.click.confirm", return_value=False
-                        ):
-                            # Setup mocks - patch both base and kill module
-                            mock_config = mock_ensure_config_base.return_value
-                            mock_ensure_config_kill.return_value = mock_config
-                            mock_config.repo_root = temp_dir
-                            mock_config.project_root = temp_dir
+                                "aifleet.commands.kill.click.confirm", return_value=False
+                            ):
+                                # Setup mocks - patch both base and kill module
+                                mock_config = mock_ensure_config_base.return_value
+                                mock_ensure_config_kill.return_value = mock_config
+                                mock_config.repo_root = temp_dir
+                                mock_config.project_root = temp_dir
 
-                            # Mock agent
-                            agent = Agent(
-                                branch="test-branch",
-                                worktree="/path/worktree",
-                                session="ai_test-branch",
-                                pid=12345,
-                                batch_id="batch1",
-                                agent="claude",
-                                created_at=datetime.now().isoformat(),
-                            )
-                            mock_state.return_value.list_agents.return_value = [agent]
+                                # Mock agent
+                                agent = Agent(
+                                    branch="test-branch",
+                                    worktree="/path/worktree",
+                                    session="ai_test-branch",
+                                    pid=12345,
+                                    batch_id="batch1",
+                                    agent="claude",
+                                    created_at=datetime.now().isoformat(),
+                                )
+                                mock_state.return_value.list_agents.return_value = [agent]
 
-                            # Run command and expect exit
-                            runner = CliRunner()
-                            result = runner.invoke(kill, ["test-branch"])
-                            assert result.exit_code == 0
-                            # Should not kill anything
-                            mock_tmux.return_value.kill_session.assert_not_called()
+                                # Run command and expect exit
+                                runner = CliRunner()
+                                result = runner.invoke(kill, ["test-branch"])
+                                assert result.exit_code == 0
+                                # Should not kill anything
+                                mock_tmux.return_value.kill_session.assert_not_called()
