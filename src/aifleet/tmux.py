@@ -209,6 +209,77 @@ class TmuxManager:
         except Exception:
             return False
 
+    def get_pane_content(self, branch: str) -> Optional[str]:
+        """Capture current pane content for status detection.
+
+        Args:
+            branch: Branch name
+
+        Returns:
+            Pane content or None if failed
+        """
+        session_name = self._session_name(branch)
+        try:
+            result = subprocess.run(
+                ["tmux", "capture-pane", "-t", session_name, "-p"],
+                capture_output=True,
+                text=True,
+            )
+            if result.returncode == 0:
+                return result.stdout
+            return None
+        except Exception:
+            return None
+
+    def get_agent_status(self, branch: str) -> str:
+        """Detect current agent status from pane content.
+
+        Args:
+            branch: Branch name
+
+        Returns:
+            Status string: ready, running, idle, dead, or unknown
+        """
+        if not self.session_exists(branch):
+            return "dead"
+
+        content = self.get_pane_content(branch)
+        if content is None:
+            return "unknown"
+
+        # Check for Claude-specific patterns
+        running_patterns = [
+            "esc to interrupt",
+            "Thinking",
+            "I'll help",
+            "Let me",
+            "I'll ",
+            "I'm going to",
+            "I need to",
+            "I can see",
+            "Looking at",
+            "Searching for",
+            "Processing",
+            "Analyzing",
+        ]
+
+        if any(pattern.lower() in content.lower() for pattern in running_patterns):
+            return "running"
+
+        # Check if waiting for input
+        content_lines = content.strip().split("\n")
+        if content_lines:
+            last_line = content_lines[-1].strip()
+            # Check for common prompts
+            if last_line.endswith(("$", ">", ":", "?")) or "Human:" in content:
+                return "ready"
+
+        # Check for recent activity (if there's meaningful content)
+        if len(content.strip()) > 50:  # Some meaningful content
+            return "idle"
+
+        return "idle"
+
     def get_session_info(self, branch: str) -> Optional[dict]:
         """Get detailed session information.
 
