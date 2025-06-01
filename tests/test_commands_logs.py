@@ -74,31 +74,31 @@ class TestLogsCommand:
 
                         # Mock agent
                         agent = Agent(
-                        branch="test-branch",
-                        worktree="/path/worktree",
-                        session="ai_test-branch",
-                        pid=12345,
-                        batch_id="batch1",
-                        agent="claude",
-                        created_at=datetime.now().isoformat(),
-                    )
-                    mock_state.return_value.get_agent.return_value = agent
+                            branch="test-branch",
+                            worktree="/path/worktree",
+                            session="ai_test-branch",
+                            pid=12345,
+                            batch_id="batch1",
+                            agent="claude",
+                            created_at=datetime.now().isoformat(),
+                        )
+                        mock_state.return_value.get_agent.return_value = agent
 
-                    # Mock tmux operations
-                    mock_tmux.return_value.session_exists.return_value = True
-                    mock_tmux.return_value.get_session_output.return_value = (
-                        "Log output"
-                    )
+                        # Mock tmux operations
+                        mock_tmux.return_value.session_exists.return_value = True
+                        mock_tmux.return_value.get_session_output.return_value = (
+                            "Log output"
+                        )
 
-                    # Run command with custom lines
-                    runner = CliRunner()
-                    result = runner.invoke(logs, ["test-branch", "--lines", "100"])
-                    assert result.exit_code == 0
+                        # Run command with custom lines
+                        runner = CliRunner()
+                        result = runner.invoke(logs, ["test-branch", "--lines", "100"])
+                        assert result.exit_code == 0
 
-                    # Verify calls
-                    mock_tmux.return_value.get_session_output.assert_called_once_with(
-                        "ai_test-branch", 100
-                    )
+                        # Verify calls
+                        mock_tmux.return_value.get_session_output.assert_called_once_with(
+                            "ai_test-branch", 100
+                        )
 
     def test_logs_agent_not_found(self, temp_dir):
         """Test logs when agent doesn't exist."""
@@ -136,27 +136,27 @@ class TestLogsCommand:
 
                         # Mock agent
                         agent = Agent(
-                        branch="test-branch",
-                        worktree="/path/worktree",
-                        session="ai_test-branch",
-                        pid=12345,
-                        batch_id="batch1",
-                        agent="claude",
-                        created_at=datetime.now().isoformat(),
-                    )
-                    mock_state.return_value.get_agent.return_value = agent
+                            branch="test-branch",
+                            worktree="/path/worktree",
+                            session="ai_test-branch",
+                            pid=12345,
+                            batch_id="batch1",
+                            agent="claude",
+                            created_at=datetime.now().isoformat(),
+                        )
+                        mock_state.return_value.get_agent.return_value = agent
 
-                    # Session doesn't exist
-                    mock_tmux.return_value.session_exists.return_value = False
+                        # Session doesn't exist
+                        mock_tmux.return_value.session_exists.return_value = False
 
-                    # Run command and expect exit
-                    runner = CliRunner()
-                    result = runner.invoke(logs, ["test-branch", "--lines", "50"])
-                    assert result.exit_code == 1
-                    # Should clean up state
-                    mock_state.return_value.remove_agent.assert_called_once_with(
-                        "test-branch"
-                    )
+                        # Run command and expect exit
+                        runner = CliRunner()
+                        result = runner.invoke(logs, ["test-branch", "--lines", "50"])
+                        assert result.exit_code == 1
+                        # Should clean up state
+                        mock_state.return_value.remove_agent.assert_called_once_with(
+                            "test-branch"
+                        )
 
     def test_logs_no_output(self, temp_dir):
         """Test logs when no output available."""
@@ -173,25 +173,25 @@ class TestLogsCommand:
 
                         # Mock agent
                         agent = Agent(
-                        branch="test-branch",
-                        worktree="/path/worktree",
-                        session="ai_test-branch",
-                        pid=12345,
-                        batch_id="batch1",
-                        agent="claude",
-                        created_at=datetime.now().isoformat(),
-                    )
-                    mock_state.return_value.get_agent.return_value = agent
+                            branch="test-branch",
+                            worktree="/path/worktree",
+                            session="ai_test-branch",
+                            pid=12345,
+                            batch_id="batch1",
+                            agent="claude",
+                            created_at=datetime.now().isoformat(),
+                        )
+                        mock_state.return_value.get_agent.return_value = agent
 
-                    # Mock tmux operations
-                    mock_tmux.return_value.session_exists.return_value = True
-                    # No output
-                    mock_tmux.return_value.get_session_output.return_value = None
+                        # Mock tmux operations
+                        mock_tmux.return_value.session_exists.return_value = True
+                        # No output
+                        mock_tmux.return_value.get_session_output.return_value = None
 
-                    # Run command
-                    runner = CliRunner()
-                    result = runner.invoke(logs, ["test-branch", "--lines", "50"])
-                    assert result.exit_code == 0
+                        # Run command
+                        runner = CliRunner()
+                        result = runner.invoke(logs, ["test-branch", "--lines", "50"])
+                        assert result.exit_code == 0
 
-                    # Should still succeed but with different message
-                    mock_tmux.return_value.get_session_output.assert_called_once()
+                        # Should still succeed but with different message
+                        mock_tmux.return_value.get_session_output.assert_called_once()
