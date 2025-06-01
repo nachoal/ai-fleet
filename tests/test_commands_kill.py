@@ -321,9 +321,7 @@ class TestKillCommand:
             ) as mock_ensure_config_kill:
                 with patch("aifleet.commands.kill.StateManager") as mock_state:
                     with patch("aifleet.commands.kill.TmuxManager"):
-                        with patch(
-                            "aifleet.commands.kill.WorktreeManager"
-                        ):
+                        with patch("aifleet.commands.kill.WorktreeManager"):
                             # Setup mocks - patch both base and kill module
                             mock_config = mock_ensure_config_base.return_value
                             mock_ensure_config_kill.return_value = mock_config
@@ -346,9 +344,7 @@ class TestKillCommand:
             ) as mock_ensure_config_kill:
                 with patch("aifleet.commands.kill.StateManager") as mock_state:
                     with patch("aifleet.commands.kill.TmuxManager"):
-                        with patch(
-                            "aifleet.commands.kill.WorktreeManager"
-                        ):
+                        with patch("aifleet.commands.kill.WorktreeManager"):
                             with patch(
                                 "aifleet.commands.kill.click.confirm",
                                 return_value=False,

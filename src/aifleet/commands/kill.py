@@ -116,7 +116,7 @@ def kill(pattern: str, batch: str, force: bool, delete_branch: bool) -> None:
         click.echo(f"  ✅ Agent '{agent.branch}' killed successfully")
 
     # Summary
-    click.echo(f"\n{'='*50}")
+    click.echo(f"\n{'=' * 50}")
     click.echo(f"Killed {killed_count} agent(s) successfully.")
 
     if failed_agents:
