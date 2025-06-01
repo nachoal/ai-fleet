@@ -105,21 +105,21 @@ class TestLogsCommand:
         with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config_base:
             with patch("aifleet.commands.logs.ensure_project_config") as mock_ensure_config_logs:
                 with patch("aifleet.commands.logs.StateManager") as mock_state:
-                with patch("aifleet.commands.logs.TmuxManager") as _:
-                    # Setup mocks - patch both base and logs module
-                    mock_config = mock_ensure_config_base.return_value
-                    mock_ensure_config_logs.return_value = mock_config
-                    mock_config.repo_root = temp_dir
-                    mock_config.project_root = temp_dir
-                    mock_state.return_value.get_agent.return_value = None
+                    with patch("aifleet.commands.logs.TmuxManager") as _:
+                        # Setup mocks - patch both base and logs module
+                        mock_config = mock_ensure_config_base.return_value
+                        mock_ensure_config_logs.return_value = mock_config
+                        mock_config.repo_root = temp_dir
+                        mock_config.project_root = temp_dir
+                        mock_state.return_value.get_agent.return_value = None
 
-                    # Run command and expect exit
-                    runner = CliRunner()
-                    result = runner.invoke(logs, ["nonexistent", "--lines", "50"])
-                    assert result.exit_code == 1
-                    mock_state.return_value.get_agent.assert_called_once_with(
-                        "nonexistent"
-                    )
+                        # Run command and expect exit
+                        runner = CliRunner()
+                        result = runner.invoke(logs, ["nonexistent", "--lines", "50"])
+                        assert result.exit_code == 1
+                        mock_state.return_value.get_agent.assert_called_once_with(
+                            "nonexistent"
+                        )
 
     def test_logs_session_not_found(self, temp_dir):
         """Test logs when tmux session doesn't exist."""
