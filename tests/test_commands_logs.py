@@ -14,7 +14,7 @@ class TestLogsCommand:
 
     def test_logs_success(self, temp_dir):
         """Test getting logs from existing agent."""
-        with patch("aifleet.commands.logs.ensure_project_config") as mock_ensure_config:
+        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.logs.StateManager") as mock_state:
                 with patch("aifleet.commands.logs.TmuxManager") as mock_tmux:
                     # Setup mocks
@@ -59,7 +59,7 @@ class TestLogsCommand:
 
     def test_logs_custom_lines(self, temp_dir):
         """Test getting logs with custom line count."""
-        with patch("aifleet.commands.logs.ensure_project_config") as mock_ensure_config:
+        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.logs.StateManager") as mock_state:
                 with patch("aifleet.commands.logs.TmuxManager") as mock_tmux:
                     # Setup mocks
@@ -98,7 +98,7 @@ class TestLogsCommand:
 
     def test_logs_agent_not_found(self, temp_dir):
         """Test logs when agent doesn't exist."""
-        with patch("aifleet.commands.logs.ensure_project_config") as mock_ensure_config:
+        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.logs.StateManager") as mock_state:
                 with patch("aifleet.commands.logs.TmuxManager") as _:
                     # Setup mocks
@@ -117,7 +117,7 @@ class TestLogsCommand:
 
     def test_logs_session_not_found(self, temp_dir):
         """Test logs when tmux session doesn't exist."""
-        with patch("aifleet.commands.logs.ensure_project_config") as mock_ensure_config:
+        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.logs.StateManager") as mock_state:
                 with patch("aifleet.commands.logs.TmuxManager") as mock_tmux:
                     # Setup mocks
@@ -152,7 +152,7 @@ class TestLogsCommand:
 
     def test_logs_no_output(self, temp_dir):
         """Test logs when no output available."""
-        with patch("aifleet.commands.logs.ensure_project_config") as mock_ensure_config:
+        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.logs.StateManager") as mock_state:
                 with patch("aifleet.commands.logs.TmuxManager") as mock_tmux:
                     # Setup mocks

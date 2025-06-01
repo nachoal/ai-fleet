@@ -14,7 +14,8 @@ class TestPromptCommand:
 
     def test_prompt_success(self, temp_dir):
         """Test sending prompt to existing agent."""
-        with patch("aifleet.commands.prompt.ensure_project_config") as mock_ensure_config:
+        # Patch at the source where it's defined, not where it's imported
+        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.prompt.StateManager") as mock_state:
                 with patch("aifleet.commands.prompt.TmuxManager") as mock_tmux:
                     # Setup mocks
@@ -59,7 +60,7 @@ class TestPromptCommand:
 
     def test_prompt_agent_not_found(self, temp_dir):
         """Test prompt when agent doesn't exist."""
-        with patch("aifleet.commands.prompt.ensure_project_config") as mock_ensure_config:
+        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.prompt.StateManager") as mock_state:
                 with patch("aifleet.commands.prompt.TmuxManager") as _:
                     # Setup mocks
@@ -78,7 +79,7 @@ class TestPromptCommand:
 
     def test_prompt_session_not_found(self, temp_dir):
         """Test prompt when tmux session doesn't exist."""
-        with patch("aifleet.commands.prompt.ensure_project_config") as mock_ensure_config:
+        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.prompt.StateManager") as mock_state:
                 with patch("aifleet.commands.prompt.TmuxManager") as mock_tmux:
                     # Setup mocks
@@ -113,7 +114,7 @@ class TestPromptCommand:
 
     def test_prompt_send_failed(self, temp_dir):
         """Test prompt when send command fails."""
-        with patch("aifleet.commands.prompt.ensure_project_config") as mock_ensure_config:
+        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.prompt.StateManager") as mock_state:
                 with patch("aifleet.commands.prompt.TmuxManager") as mock_tmux:
                     # Setup mocks
