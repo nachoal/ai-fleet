@@ -5,10 +5,10 @@ from pathlib import Path
 
 import click
 
-from ..config import ConfigManager
 from ..state import StateManager
 from ..tmux import TmuxManager
 from ..worktree import WorktreeManager
+from .base import ensure_project_config
 
 
 @click.command()
@@ -23,7 +23,7 @@ def kill(pattern: str, batch: bool, force: bool) -> None:
         batch: If true, pattern is treated as batch ID
         force: Skip confirmation prompt
     """
-    config = ConfigManager()
+    config = ensure_project_config()
     state = StateManager(config.repo_root)
     tmux = TmuxManager(config.tmux_prefix)
     worktree = WorktreeManager(config.repo_root, config.worktree_root)

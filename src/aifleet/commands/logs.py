@@ -2,9 +2,9 @@
 
 import click
 
-from ..config import ConfigManager
 from ..state import StateManager
 from ..tmux import TmuxManager
+from .base import ensure_project_config
 
 
 @click.command()
@@ -17,7 +17,7 @@ def logs(branch: str, lines: int) -> None:
         branch: The branch name of the agent
         lines: Number of lines to show (default: 50)
     """
-    config = ConfigManager()
+    config = ensure_project_config()
     state = StateManager(config.repo_root)
     tmux = TmuxManager(config.tmux_prefix)
 

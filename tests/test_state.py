@@ -63,7 +63,10 @@ class TestStateManager:
 
     def test_add_agent(self, temp_dir):
         """Test adding an agent."""
-        state = StateManager(temp_dir)
+        # Create project structure
+        project_dir = temp_dir / "test-project"
+        project_dir.mkdir()
+        state = StateManager(project_dir)
 
         agent = Agent(
             branch="test-branch",
@@ -84,7 +87,10 @@ class TestStateManager:
 
     def test_remove_agent(self, temp_dir):
         """Test removing an agent."""
-        state = StateManager(temp_dir)
+        # Create project structure
+        project_dir = temp_dir / "test-project"
+        project_dir.mkdir()
+        state = StateManager(project_dir)
 
         # Add agent
         agent = Agent(
@@ -112,7 +118,10 @@ class TestStateManager:
 
     def test_get_agent(self, temp_dir):
         """Test getting a specific agent."""
-        state = StateManager(temp_dir)
+        # Create project structure
+        project_dir = temp_dir / "test-project"
+        project_dir.mkdir()
+        state = StateManager(project_dir)
 
         # Add agents
         agent1 = Agent(
@@ -149,7 +158,10 @@ class TestStateManager:
 
     def test_list_agents_by_batch(self, temp_dir):
         """Test listing agents filtered by batch."""
-        state = StateManager(temp_dir)
+        # Create project structure
+        project_dir = temp_dir / "test-project"
+        project_dir.mkdir()
+        state = StateManager(project_dir)
 
         # Add agents in different batches
         for i in range(3):
@@ -177,7 +189,10 @@ class TestStateManager:
 
     def test_update_agent_pid(self, temp_dir):
         """Test updating agent PID."""
-        state = StateManager(temp_dir)
+        # Create project structure
+        project_dir = temp_dir / "test-project"
+        project_dir.mkdir()
+        state = StateManager(project_dir)
 
         # Add agent without PID
         agent = Agent(
@@ -205,7 +220,10 @@ class TestStateManager:
 
     def test_get_batches(self, temp_dir):
         """Test getting unique batch IDs."""
-        state = StateManager(temp_dir)
+        # Create project structure
+        project_dir = temp_dir / "test-project"
+        project_dir.mkdir()
+        state = StateManager(project_dir)
 
         # Add agents with different batches
         batches = ["batch1", "batch2", "batch1", "batch3"]
@@ -228,7 +246,10 @@ class TestStateManager:
 
     def test_remove_batch(self, temp_dir):
         """Test removing all agents in a batch."""
-        state = StateManager(temp_dir)
+        # Create project structure
+        project_dir = temp_dir / "test-project"
+        project_dir.mkdir()
+        state = StateManager(project_dir)
 
         # Add agents in batches
         for i in range(5):
@@ -254,7 +275,10 @@ class TestStateManager:
 
     def test_reconcile_with_tmux(self, temp_dir):
         """Test reconciling state with tmux sessions."""
-        state = StateManager(temp_dir)
+        # Create project structure
+        project_dir = temp_dir / "test-project"
+        project_dir.mkdir()
+        state = StateManager(project_dir)
 
         # Add agents
         for i in range(3):

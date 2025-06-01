@@ -44,9 +44,6 @@ update = [
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 addopts = [
-    "--cov=aifleet",
-    "--cov-report=term-missing",
-    "--cov-report=html",
     "--verbose",
 ]
 

@@ -6,10 +6,10 @@ from typing import Dict, List, Optional, Tuple, Union
 import click
 import psutil
 
-from ..config import ConfigManager
 from ..state import StateManager
 from ..tmux import TmuxManager
 from ..utils import format_duration
+from .base import ensure_project_config
 
 
 def get_process_stats(pid: Optional[int]) -> Tuple[float, float]:
@@ -37,8 +37,8 @@ def get_process_stats(pid: Optional[int]) -> Tuple[float, float]:
 )
 def list(grouped: bool, all: bool):
     """List all active AI agents."""
-    config = ConfigManager()
-    state = StateManager()
+    config = ensure_project_config()
+    state = StateManager(config.repo_root)
     tmux_mgr = TmuxManager(config.tmux_prefix)
 
     # Get active tmux sessions

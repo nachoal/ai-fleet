@@ -2,9 +2,9 @@
 
 import click
 
-from ..config import ConfigManager
 from ..state import StateManager
 from ..tmux import TmuxManager
+from .base import ensure_project_config
 
 
 @click.command()
@@ -15,7 +15,7 @@ def attach(branch: str) -> None:
     Args:
         branch: The branch name of the agent
     """
-    config = ConfigManager()
+    config = ensure_project_config()
     state = StateManager(config.repo_root)
     tmux = TmuxManager(config.tmux_prefix)
 
