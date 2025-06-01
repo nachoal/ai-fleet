@@ -29,6 +29,13 @@ jobs:
     
     - name: Run tests with pytest
       run: |
+        # Run tests without coverage to avoid import issues
+        pytest -xvs --no-cov
+    
+    - name: Run tests with coverage
+      if: matrix.python-version == '3.11'
+      run: |
+        # Run coverage as a separate step
         pytest --cov=aifleet --cov-report=term-missing --cov-report=xml
     
     - name: Upload coverage to Codecov

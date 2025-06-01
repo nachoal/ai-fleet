@@ -15,7 +15,7 @@ class TestKillCommand:
 
     def test_kill_single_agent(self, temp_dir):
         """Test killing a single agent."""
-        with patch("aifleet.commands.kill.ConfigManager") as mock_config:
+        with patch("aifleet.commands.kill.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.kill.StateManager") as mock_state:
                 with patch("aifleet.commands.kill.TmuxManager") as mock_tmux:
                     with patch(
@@ -25,11 +25,13 @@ class TestKillCommand:
                             "aifleet.commands.kill.click.confirm", return_value=True
                         ):
                             # Setup mocks
-                            mock_config.return_value.repo_root = temp_dir
-                            mock_config.return_value.worktree_root = (
+                            mock_config = mock_ensure_config.return_value
+                            mock_config.repo_root = temp_dir
+                            mock_config.project_root = temp_dir
+                            mock_config.worktree_root = (
                                 temp_dir / "worktrees"
                             )
-                            mock_config.return_value.tmux_prefix = "ai_"
+                            mock_config.tmux_prefix = "ai_"
 
                             # Mock agent
                             agent = Agent(
@@ -64,7 +66,7 @@ class TestKillCommand:
 
     def test_kill_with_glob_pattern(self, temp_dir):
         """Test killing agents with glob pattern."""
-        with patch("aifleet.commands.kill.ConfigManager") as mock_config:
+        with patch("aifleet.commands.kill.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.kill.StateManager") as mock_state:
                 with patch("aifleet.commands.kill.TmuxManager") as mock_tmux:
                     with patch("aifleet.commands.kill.WorktreeManager") as _:
@@ -72,8 +74,10 @@ class TestKillCommand:
                             "aifleet.commands.kill.click.confirm", return_value=True
                         ):
                             # Setup mocks
-                            mock_config.return_value.repo_root = temp_dir
-                            mock_config.return_value.worktree_root = (
+                            mock_config = mock_ensure_config.return_value
+                            mock_config.repo_root = temp_dir
+                            mock_config.project_root = temp_dir
+                            mock_config.worktree_root = (
                                 temp_dir / "worktrees"
                             )
 
@@ -129,7 +133,7 @@ class TestKillCommand:
 
     def test_kill_batch(self, temp_dir):
         """Test killing all agents in a batch."""
-        with patch("aifleet.commands.kill.ConfigManager") as mock_config:
+        with patch("aifleet.commands.kill.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.kill.StateManager") as mock_state:
                 with patch("aifleet.commands.kill.TmuxManager") as mock_tmux:
                     with patch("aifleet.commands.kill.WorktreeManager") as _:
@@ -137,8 +141,10 @@ class TestKillCommand:
                             "aifleet.commands.kill.click.confirm", return_value=True
                         ):
                             # Setup mocks
-                            mock_config.return_value.repo_root = temp_dir
-                            mock_config.return_value.worktree_root = (
+                            mock_config = mock_ensure_config.return_value
+                            mock_config.repo_root = temp_dir
+                            mock_config.project_root = temp_dir
+                            mock_config.worktree_root = (
                                 temp_dir / "worktrees"
                             )
 
@@ -179,7 +185,7 @@ class TestKillCommand:
 
     def test_kill_force_no_confirmation(self, temp_dir):
         """Test force kill without confirmation."""
-        with patch("aifleet.commands.kill.ConfigManager") as mock_config:
+        with patch("aifleet.commands.kill.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.kill.StateManager") as mock_state:
                 with patch("aifleet.commands.kill.TmuxManager") as mock_tmux:
                     with patch("aifleet.commands.kill.WorktreeManager") as _:
@@ -187,8 +193,10 @@ class TestKillCommand:
                             "aifleet.commands.kill.click.confirm"
                         ) as mock_confirm:
                             # Setup mocks
-                            mock_config.return_value.repo_root = temp_dir
-                            mock_config.return_value.worktree_root = (
+                            mock_config = mock_ensure_config.return_value
+                            mock_config.repo_root = temp_dir
+                            mock_config.project_root = temp_dir
+                            mock_config.worktree_root = (
                                 temp_dir / "worktrees"
                             )
 
@@ -219,12 +227,14 @@ class TestKillCommand:
 
     def test_kill_no_agents_found(self, temp_dir):
         """Test kill when no agents match."""
-        with patch("aifleet.commands.kill.ConfigManager") as mock_config:
+        with patch("aifleet.commands.kill.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.kill.StateManager") as mock_state:
                 with patch("aifleet.commands.kill.TmuxManager") as _:
                     with patch("aifleet.commands.kill.WorktreeManager") as _:
                         # Setup mocks
-                        mock_config.return_value.repo_root = temp_dir
+                        mock_config = mock_ensure_config.return_value
+                        mock_config.repo_root = temp_dir
+                        mock_config.project_root = temp_dir
                         mock_state.return_value.list_agents.return_value = []
 
                         # Run command and expect exit
@@ -234,7 +244,7 @@ class TestKillCommand:
 
     def test_kill_cancelled_by_user(self, temp_dir):
         """Test kill cancelled by user confirmation."""
-        with patch("aifleet.commands.kill.ConfigManager") as mock_config:
+        with patch("aifleet.commands.kill.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.kill.StateManager") as mock_state:
                 with patch("aifleet.commands.kill.TmuxManager") as mock_tmux:
                     with patch("aifleet.commands.kill.WorktreeManager") as _:
@@ -242,7 +252,9 @@ class TestKillCommand:
                             "aifleet.commands.kill.click.confirm", return_value=False
                         ):
                             # Setup mocks
-                            mock_config.return_value.repo_root = temp_dir
+                            mock_config = mock_ensure_config.return_value
+                            mock_config.repo_root = temp_dir
+                            mock_config.project_root = temp_dir
 
                             # Mock agent
                             agent = Agent(

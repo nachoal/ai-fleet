@@ -14,12 +14,14 @@ class TestLogsCommand:
 
     def test_logs_success(self, temp_dir):
         """Test getting logs from existing agent."""
-        with patch("aifleet.commands.logs.ConfigManager") as mock_config:
+        with patch("aifleet.commands.logs.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.logs.StateManager") as mock_state:
                 with patch("aifleet.commands.logs.TmuxManager") as mock_tmux:
                     # Setup mocks
-                    mock_config.return_value.repo_root = temp_dir
-                    mock_config.return_value.tmux_prefix = "ai_"
+                    mock_config = mock_ensure_config.return_value
+                    mock_config.repo_root = temp_dir
+                    mock_config.project_root = temp_dir
+                    mock_config.tmux_prefix = "ai_"
 
                     # Mock agent
                     agent = Agent(
@@ -57,12 +59,14 @@ class TestLogsCommand:
 
     def test_logs_custom_lines(self, temp_dir):
         """Test getting logs with custom line count."""
-        with patch("aifleet.commands.logs.ConfigManager") as mock_config:
+        with patch("aifleet.commands.logs.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.logs.StateManager") as mock_state:
                 with patch("aifleet.commands.logs.TmuxManager") as mock_tmux:
                     # Setup mocks
-                    mock_config.return_value.repo_root = temp_dir
-                    mock_config.return_value.tmux_prefix = "ai_"
+                    mock_config = mock_ensure_config.return_value
+                    mock_config.repo_root = temp_dir
+                    mock_config.project_root = temp_dir
+                    mock_config.tmux_prefix = "ai_"
 
                     # Mock agent
                     agent = Agent(
@@ -94,11 +98,13 @@ class TestLogsCommand:
 
     def test_logs_agent_not_found(self, temp_dir):
         """Test logs when agent doesn't exist."""
-        with patch("aifleet.commands.logs.ConfigManager") as mock_config:
+        with patch("aifleet.commands.logs.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.logs.StateManager") as mock_state:
                 with patch("aifleet.commands.logs.TmuxManager") as _:
                     # Setup mocks
-                    mock_config.return_value.repo_root = temp_dir
+                    mock_config = mock_ensure_config.return_value
+                    mock_config.repo_root = temp_dir
+                    mock_config.project_root = temp_dir
                     mock_state.return_value.get_agent.return_value = None
 
                     # Run command and expect exit
@@ -111,12 +117,14 @@ class TestLogsCommand:
 
     def test_logs_session_not_found(self, temp_dir):
         """Test logs when tmux session doesn't exist."""
-        with patch("aifleet.commands.logs.ConfigManager") as mock_config:
+        with patch("aifleet.commands.logs.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.logs.StateManager") as mock_state:
                 with patch("aifleet.commands.logs.TmuxManager") as mock_tmux:
                     # Setup mocks
-                    mock_config.return_value.repo_root = temp_dir
-                    mock_config.return_value.tmux_prefix = "ai_"
+                    mock_config = mock_ensure_config.return_value
+                    mock_config.repo_root = temp_dir
+                    mock_config.project_root = temp_dir
+                    mock_config.tmux_prefix = "ai_"
 
                     # Mock agent
                     agent = Agent(
@@ -144,12 +152,14 @@ class TestLogsCommand:
 
     def test_logs_no_output(self, temp_dir):
         """Test logs when no output available."""
-        with patch("aifleet.commands.logs.ConfigManager") as mock_config:
+        with patch("aifleet.commands.logs.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.logs.StateManager") as mock_state:
                 with patch("aifleet.commands.logs.TmuxManager") as mock_tmux:
                     # Setup mocks
-                    mock_config.return_value.repo_root = temp_dir
-                    mock_config.return_value.tmux_prefix = "ai_"
+                    mock_config = mock_ensure_config.return_value
+                    mock_config.repo_root = temp_dir
+                    mock_config.project_root = temp_dir
+                    mock_config.tmux_prefix = "ai_"
 
                     # Mock agent
                     agent = Agent(

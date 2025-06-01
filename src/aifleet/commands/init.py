@@ -69,7 +69,7 @@ def init(project_type: str, migrate_legacy: bool) -> None:
     if not config.project_root:
         click.echo("❌ Unable to determine project root", err=True)
         raise SystemExit(1)
-    
+
     project_name = config.project_root.name
 
     # Handle legacy migration
@@ -123,7 +123,11 @@ def init(project_type: str, migrate_legacy: bool) -> None:
         click.echo(f"\n✅ Created {config.project_config_file}")
 
         # Add to .gitignore if needed
-        gitignore_path = config.project_root / ".gitignore" if config.project_root else Path(".gitignore")
+        gitignore_path = (
+            config.project_root / ".gitignore"
+            if config.project_root
+            else Path(".gitignore")
+        )
         if gitignore_path.exists():
             with open(gitignore_path, "r") as f:
                 gitignore_content = f.read()

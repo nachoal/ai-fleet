@@ -14,12 +14,14 @@ class TestPromptCommand:
 
     def test_prompt_success(self, temp_dir):
         """Test sending prompt to existing agent."""
-        with patch("aifleet.commands.prompt.ConfigManager") as mock_config:
+        with patch("aifleet.commands.prompt.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.prompt.StateManager") as mock_state:
                 with patch("aifleet.commands.prompt.TmuxManager") as mock_tmux:
                     # Setup mocks
-                    mock_config.return_value.repo_root = temp_dir
-                    mock_config.return_value.tmux_prefix = "ai_"
+                    mock_config = mock_ensure_config.return_value
+                    mock_config.repo_root = temp_dir
+                    mock_config.project_root = temp_dir
+                    mock_config.tmux_prefix = "ai_"
 
                     # Mock agent
                     agent = Agent(
@@ -57,11 +59,13 @@ class TestPromptCommand:
 
     def test_prompt_agent_not_found(self, temp_dir):
         """Test prompt when agent doesn't exist."""
-        with patch("aifleet.commands.prompt.ConfigManager") as mock_config:
+        with patch("aifleet.commands.prompt.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.prompt.StateManager") as mock_state:
                 with patch("aifleet.commands.prompt.TmuxManager") as _:
                     # Setup mocks
-                    mock_config.return_value.repo_root = temp_dir
+                    mock_config = mock_ensure_config.return_value
+                    mock_config.repo_root = temp_dir
+                    mock_config.project_root = temp_dir
                     mock_state.return_value.get_agent.return_value = None
 
                     # Run command and expect exit
@@ -74,12 +78,14 @@ class TestPromptCommand:
 
     def test_prompt_session_not_found(self, temp_dir):
         """Test prompt when tmux session doesn't exist."""
-        with patch("aifleet.commands.prompt.ConfigManager") as mock_config:
+        with patch("aifleet.commands.prompt.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.prompt.StateManager") as mock_state:
                 with patch("aifleet.commands.prompt.TmuxManager") as mock_tmux:
                     # Setup mocks
-                    mock_config.return_value.repo_root = temp_dir
-                    mock_config.return_value.tmux_prefix = "ai_"
+                    mock_config = mock_ensure_config.return_value
+                    mock_config.repo_root = temp_dir
+                    mock_config.project_root = temp_dir
+                    mock_config.tmux_prefix = "ai_"
 
                     # Mock agent
                     agent = Agent(
@@ -107,12 +113,14 @@ class TestPromptCommand:
 
     def test_prompt_send_failed(self, temp_dir):
         """Test prompt when send command fails."""
-        with patch("aifleet.commands.prompt.ConfigManager") as mock_config:
+        with patch("aifleet.commands.prompt.ensure_project_config") as mock_ensure_config:
             with patch("aifleet.commands.prompt.StateManager") as mock_state:
                 with patch("aifleet.commands.prompt.TmuxManager") as mock_tmux:
                     # Setup mocks
-                    mock_config.return_value.repo_root = temp_dir
-                    mock_config.return_value.tmux_prefix = "ai_"
+                    mock_config = mock_ensure_config.return_value
+                    mock_config.repo_root = temp_dir
+                    mock_config.project_root = temp_dir
+                    mock_config.tmux_prefix = "ai_"
 
                     # Mock agent
                     agent = Agent(

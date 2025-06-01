@@ -32,11 +32,15 @@ class TestCLI:
         """Test showing configuration."""
         # Mock config
         mock_config = MagicMock()
-        mock_config.config_file = temp_dir / "config.toml"
+        mock_config.is_git_repository = True
+        mock_config.has_project_config = True
+        mock_config.project_root = temp_dir
+        mock_config.project_config_file = temp_dir / ".aifleet" / "config.toml"
         mock_config_class.return_value = mock_config
 
         # Create config file
-        mock_config.config_file.write_text("test = true")
+        mock_config.project_config_file.parent.mkdir(parents=True, exist_ok=True)
+        mock_config.project_config_file.write_text("test = true")
 
         runner = CliRunner()
         result = runner.invoke(cli, ["config"])
@@ -50,6 +54,8 @@ class TestCLI:
         """Test validating configuration."""
         # Mock config with no errors
         mock_config = MagicMock()
+        mock_config.is_git_repository = True
+        mock_config.has_project_config = True
         mock_config.validate.return_value = []
         mock_config_class.return_value = mock_config
 
@@ -83,7 +89,8 @@ class TestCLI:
         """Test editing configuration."""
         # Mock config
         mock_config = MagicMock()
-        mock_config.config_file = temp_dir / "config.toml"
+        mock_config.has_project_config = True
+        mock_config.project_config_file = temp_dir / ".aifleet" / "config.toml"
         mock_config_class.return_value = mock_config
 
         runner = CliRunner()
@@ -93,7 +100,7 @@ class TestCLI:
         mock_subprocess_run.assert_called_once()
         # Check editor was called with config file
         call_args = mock_subprocess_run.call_args[0][0]
-        assert str(mock_config.config_file) in call_args
+        assert str(mock_config.project_config_file) in call_args
 
 
 class TestCreateCommand:
@@ -102,10 +109,10 @@ class TestCreateCommand:
     @patch("aifleet.commands.create.TmuxManager")
     @patch("aifleet.commands.create.WorktreeManager")
     @patch("aifleet.commands.create.StateManager")
-    @patch("aifleet.commands.create.ConfigManager")
+    @patch("aifleet.commands.create.ensure_project_config")
     def test_create_basic(
         self,
-        mock_config_class,
+        mock_ensure_config,
         mock_state_class,
         mock_worktree_class,
         mock_tmux_class,
@@ -122,7 +129,8 @@ class TestCreateCommand:
         mock_config.credential_files = []
         mock_config.setup_commands = []
         mock_config.quick_setup = False
-        mock_config_class.return_value = mock_config
+        mock_config.project_root = temp_dir / "repo"
+        mock_ensure_config.return_value = mock_config
 
         # Mock state
         mock_state = MagicMock()
@@ -160,9 +168,15 @@ class TestCreateCommand:
         mock_state.add_agent.assert_called_once()
 
     @patch("aifleet.commands.create.StateManager")
-    @patch("aifleet.commands.create.ConfigManager")
-    def test_create_existing_agent(self, mock_config_class, mock_state_class):
+    @patch("aifleet.commands.create.ensure_project_config")
+    def test_create_existing_agent(self, mock_ensure_config, mock_state_class, temp_dir):
         """Test creating agent that already exists."""
+        # Mock config
+        mock_config = MagicMock()
+        mock_config.project_root = temp_dir
+        mock_config.repo_root = temp_dir
+        mock_ensure_config.return_value = mock_config
+        
         # Mock existing agent
         mock_state = MagicMock()
         mock_state.get_agent.return_value = MagicMock()  # Agent exists
@@ -180,9 +194,14 @@ class TestListCommand:
 
     @patch("aifleet.commands.list.TmuxManager")
     @patch("aifleet.commands.list.StateManager")
-    @patch("aifleet.commands.list.ConfigManager")
-    def test_list_empty(self, mock_config_class, mock_state_class, mock_tmux_class):
+    @patch("aifleet.commands.list.ensure_project_config")
+    def test_list_empty(self, mock_ensure_config, mock_state_class, mock_tmux_class, temp_dir):
         """Test listing with no agents."""
+        # Mock config
+        mock_config = MagicMock()
+        mock_config.project_root = temp_dir
+        mock_ensure_config.return_value = mock_config
+        
         # Mock empty state
         mock_state = MagicMock()
         mock_state.list_agents.return_value = []
@@ -202,15 +221,20 @@ class TestListCommand:
     @patch("aifleet.commands.list.psutil")
     @patch("aifleet.commands.list.TmuxManager")
     @patch("aifleet.commands.list.StateManager")
-    @patch("aifleet.commands.list.ConfigManager")
+    @patch("aifleet.commands.list.ensure_project_config")
     def test_list_agents(
-        self, mock_config_class, mock_state_class, mock_tmux_class, mock_psutil
+        self, mock_ensure_config, mock_state_class, mock_tmux_class, mock_psutil, temp_dir
     ):
         """Test listing active agents."""
         from datetime import datetime
 
         from aifleet.state import Agent
 
+        # Mock config
+        mock_config = MagicMock()
+        mock_config.project_root = temp_dir
+        mock_ensure_config.return_value = mock_config
+        
         # Mock agents
         agents = [
             Agent(
@@ -265,15 +289,20 @@ class TestListCommand:
     @patch("aifleet.commands.list.psutil")
     @patch("aifleet.commands.list.TmuxManager")
     @patch("aifleet.commands.list.StateManager")
-    @patch("aifleet.commands.list.ConfigManager")
+    @patch("aifleet.commands.list.ensure_project_config")
     def test_list_grouped(
-        self, mock_config_class, mock_state_class, mock_tmux_class, mock_psutil
+        self, mock_ensure_config, mock_state_class, mock_tmux_class, mock_psutil, temp_dir
     ):
         """Test listing agents grouped by batch."""
         from datetime import datetime
 
         from aifleet.state import Agent
 
+        # Mock config
+        mock_config = MagicMock()
+        mock_config.project_root = temp_dir
+        mock_ensure_config.return_value = mock_config
+        
         # Mock agents in different batches
         agents = [
             Agent(
