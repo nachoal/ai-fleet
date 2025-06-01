@@ -15,54 +15,56 @@ class TestKillCommand:
 
     def test_kill_single_agent(self, temp_dir):
         """Test killing a single agent."""
-        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config:
-            with patch("aifleet.commands.kill.StateManager") as mock_state:
-                with patch("aifleet.commands.kill.TmuxManager") as mock_tmux:
-                    with patch(
-                        "aifleet.commands.kill.WorktreeManager"
-                    ) as mock_worktree:
+        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config_base:
+            with patch("aifleet.commands.kill.ensure_project_config") as mock_ensure_config_kill:
+                with patch("aifleet.commands.kill.StateManager") as mock_state:
+                    with patch("aifleet.commands.kill.TmuxManager") as mock_tmux:
                         with patch(
-                            "aifleet.commands.kill.click.confirm", return_value=True
-                        ):
-                            # Setup mocks
-                            mock_config = mock_ensure_config.return_value
-                            mock_config.repo_root = temp_dir
-                            mock_config.project_root = temp_dir
-                            mock_config.worktree_root = (
-                                temp_dir / "worktrees"
-                            )
-                            mock_config.tmux_prefix = "ai_"
+                            "aifleet.commands.kill.WorktreeManager"
+                        ) as mock_worktree:
+                            with patch(
+                                "aifleet.commands.kill.click.confirm", return_value=True
+                            ):
+                                # Setup mocks - patch both base and kill module
+                                mock_config = mock_ensure_config_base.return_value
+                                mock_ensure_config_kill.return_value = mock_config
+                                mock_config.repo_root = temp_dir
+                                mock_config.project_root = temp_dir
+                                mock_config.worktree_root = (
+                                    temp_dir / "worktrees"
+                                )
+                                mock_config.tmux_prefix = "ai_"
 
-                            # Mock agent
-                            agent = Agent(
-                                branch="test-branch",
-                                worktree="/path/worktree",
-                                session="ai_test-branch",
-                                pid=12345,
-                                batch_id="batch1",
-                                agent="claude",
-                                created_at=datetime.now().isoformat(),
-                            )
-                            mock_state.return_value.list_agents.return_value = [agent]
+                                # Mock agent
+                                agent = Agent(
+                                    branch="test-branch",
+                                    worktree="/path/worktree",
+                                    session="ai_test-branch",
+                                    pid=12345,
+                                    batch_id="batch1",
+                                    agent="claude",
+                                    created_at=datetime.now().isoformat(),
+                                )
+                                mock_state.return_value.list_agents.return_value = [agent]
 
-                            # Mock tmux operations
-                            mock_tmux.return_value.session_exists.return_value = True
+                                # Mock tmux operations
+                                mock_tmux.return_value.session_exists.return_value = True
 
-                            # Run command
-                            runner = CliRunner()
-                            result = runner.invoke(kill, ["test-branch"])
-                            assert result.exit_code == 0
+                                # Run command
+                                runner = CliRunner()
+                                result = runner.invoke(kill, ["test-branch"])
+                                assert result.exit_code == 0
 
-                            # Verify calls
-                            mock_tmux.return_value.kill_session.assert_called_once_with(
-                                "ai_test-branch"
-                            )
-                            mock_worktree.return_value.remove_worktree.assert_called_once_with(
-                                Path("/path/worktree")
-                            )
-                            mock_state.return_value.remove_agent.assert_called_once_with(
-                                "test-branch"
-                            )
+                                # Verify calls
+                                mock_tmux.return_value.kill_session.assert_called_once_with(
+                                    "ai_test-branch"
+                                )
+                                mock_worktree.return_value.remove_worktree.assert_called_once_with(
+                                    Path("/path/worktree")
+                                )
+                                mock_state.return_value.remove_agent.assert_called_once_with(
+                                    "test-branch"
+                                )
 
     def test_kill_with_glob_pattern(self, temp_dir):
         """Test killing agents with glob pattern."""
