@@ -15,39 +15,41 @@ class TestPromptCommand:
     def test_prompt_success(self, temp_dir):
         """Test sending prompt to existing agent."""
         # Patch at the source where it's defined, not where it's imported
-        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config:
-            with patch("aifleet.commands.prompt.StateManager") as mock_state:
-                with patch("aifleet.commands.prompt.TmuxManager") as mock_tmux:
-                    # Setup mocks
-                    mock_config = mock_ensure_config.return_value
-                    mock_config.repo_root = temp_dir
-                    mock_config.project_root = temp_dir
-                    mock_config.tmux_prefix = "ai_"
+        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config_base:
+            with patch("aifleet.commands.prompt.ensure_project_config") as mock_ensure_config_prompt:
+                with patch("aifleet.commands.prompt.StateManager") as mock_state:
+                    with patch("aifleet.commands.prompt.TmuxManager") as mock_tmux:
+                        # Setup mocks - patch both base and prompt module
+                        mock_config = mock_ensure_config_base.return_value
+                        mock_ensure_config_prompt.return_value = mock_config
+                        mock_config.repo_root = temp_dir
+                        mock_config.project_root = temp_dir
+                        mock_config.tmux_prefix = "ai_"
 
-                    # Mock agent
-                    agent = Agent(
-                        branch="test-branch",
-                        worktree="/path/worktree",
-                        session="ai_test-branch",
-                        pid=12345,
-                        batch_id="batch1",
-                        agent="claude",
-                        created_at=datetime.now().isoformat(),
-                    )
-                    mock_state.return_value.get_agent.return_value = agent
+                        # Mock agent
+                        agent = Agent(
+                            branch="test-branch",
+                            worktree="/path/worktree",
+                            session="ai_test-branch",
+                            pid=12345,
+                            batch_id="batch1",
+                            agent="claude",
+                            created_at=datetime.now().isoformat(),
+                        )
+                        mock_state.return_value.get_agent.return_value = agent
 
-                    # Mock tmux operations
-                    mock_tmux.return_value.session_exists.return_value = True
-                    mock_tmux.return_value.send_command.return_value = True
+                        # Mock tmux operations
+                        mock_tmux.return_value.session_exists.return_value = True
+                        mock_tmux.return_value.send_command.return_value = True
 
-                    # Run command
-                    runner = CliRunner()
-                    result = runner.invoke(
-                        prompt, ["test-branch", "New prompt message"]
-                    )
-                    assert result.exit_code == 0
+                        # Run command
+                        runner = CliRunner()
+                        result = runner.invoke(
+                            prompt, ["test-branch", "New prompt message"]
+                        )
+                        assert result.exit_code == 0
 
-                    # Verify calls
+                        # Verify calls
                     mock_state.return_value.get_agent.assert_called_once_with(
                         "test-branch"
                     )
