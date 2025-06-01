@@ -26,7 +26,7 @@ def attach(branch: str) -> None:
         raise SystemExit(1)
 
     # Check if session exists
-    if not tmux.session_exists(agent.session):
+    if not tmux.session_exists(branch):
         click.echo(f"Session '{agent.session}' not found")
         # Clean up state
         state.remove_agent(branch)
@@ -35,4 +35,4 @@ def attach(branch: str) -> None:
     # Attach to the session
     click.echo(f"Attaching to session '{agent.session}'...")
     click.echo("Press Ctrl+B, D to detach")
-    tmux.attach_session(agent.session)
+    tmux.attach_session(branch)

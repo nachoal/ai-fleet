@@ -71,20 +71,20 @@ def multi(pairs: tuple, agent: str, quick: bool) -> None:
 
         # Create tmux session
         session_name = f"{config.tmux_prefix}{branch_name}"
-        if tmux.create_session(session_name, str(worktree_path)):
+        if tmux.create_session(branch_name, str(worktree_path)):
             # Send initial command
             cmd = f"{agent_name} {config.claude_flags} '{prompt}'"
-            tmux.send_command(session_name, cmd)
+            tmux.send_command(branch_name, cmd)
 
             # Create agent record
             agent_obj = Agent(
                 branch=branch_name,
                 worktree=str(worktree_path),
                 session=session_name,
-                pid=None,  # Will be updated later
                 batch_id=batch_id,
                 agent=agent_name,
                 created_at=datetime.now().isoformat(),
+                pid=None,  # Will be updated later
                 prompt=prompt,
             )
             state.add_agent(agent_obj)
@@ -103,5 +103,5 @@ def multi(pairs: tuple, agent: str, quick: bool) -> None:
         click.echo("\nAgents created:")
         for branch in created_agents:
             click.echo(f"  - {branch}")
-        click.echo("\nTo see all agents: aim list")
-        click.echo(f"To kill all agents: aim kill --batch {batch_id}")
+        click.echo("\nTo see all agents: fleet list")
+        click.echo(f"To kill all agents: fleet kill --batch {batch_id}")

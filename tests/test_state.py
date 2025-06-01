@@ -57,6 +57,51 @@ class TestAgent:
         assert agent.branch == "test-branch"
         assert agent.pid is None
 
+    def test_agent_from_dict_missing_pid(self):
+        """Test creating agent from dict without pid field (as saved by to_dict)."""
+        # This simulates what happens when to_dict() filters out None values
+        data = {
+            "branch": "test-branch",
+            "worktree": "/path/to/worktree",
+            "session": "ai_test-branch",
+            # pid is intentionally missing
+            "batch_id": "test-batch",
+            "agent": "claude",
+            "created_at": datetime.now().isoformat(),
+        }
+
+        agent = Agent.from_dict(data)
+        assert agent.branch == "test-branch"
+        assert agent.pid is None  # Should default to None
+
+    def test_agent_round_trip_serialization(self):
+        """Test that to_dict -> from_dict preserves the agent correctly."""
+        # Create agent with None pid
+        original = Agent(
+            branch="test-branch",
+            worktree="/path/to/worktree",
+            session="ai_test-branch",
+            pid=None,  # This will be filtered out by to_dict
+            batch_id="test-batch",
+            agent="claude",
+            created_at=datetime.now().isoformat(),
+            prompt="Test prompt",
+        )
+
+        # Convert to dict and back
+        data = original.to_dict()
+        restored = Agent.from_dict(data)
+
+        # Verify all fields are preserved
+        assert restored.branch == original.branch
+        assert restored.worktree == original.worktree
+        assert restored.session == original.session
+        assert restored.pid == original.pid
+        assert restored.batch_id == original.batch_id
+        assert restored.agent == original.agent
+        assert restored.created_at == original.created_at
+        assert restored.prompt == original.prompt
+
 
 class TestStateManager:
     """Test StateManager functionality."""

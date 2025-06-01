@@ -34,10 +34,10 @@ class TestLogsCommand:
                             branch="test-branch",
                             worktree="/path/worktree",
                             session="ai_test-branch",
-                            pid=12345,
                             batch_id="batch1",
                             agent="claude",
                             created_at=datetime.now().isoformat(),
+                            pid=12345,
                         )
                         mock_state.return_value.get_agent.return_value = agent
 
@@ -57,10 +57,10 @@ class TestLogsCommand:
                             "test-branch"
                         )
                         mock_tmux.return_value.session_exists.assert_called_once_with(
-                            "ai_test-branch"
+                            "test-branch"
                         )
                         mock_tmux.return_value.get_session_output.assert_called_once_with(
-                            "ai_test-branch", 50
+                            "test-branch", 50
                         )
 
     def test_logs_custom_lines(self, temp_dir):
@@ -85,10 +85,10 @@ class TestLogsCommand:
                             branch="test-branch",
                             worktree="/path/worktree",
                             session="ai_test-branch",
-                            pid=12345,
                             batch_id="batch1",
                             agent="claude",
                             created_at=datetime.now().isoformat(),
+                            pid=12345,
                         )
                         mock_state.return_value.get_agent.return_value = agent
 
@@ -105,7 +105,7 @@ class TestLogsCommand:
 
                         # Verify calls
                         mock_tmux.return_value.get_session_output.assert_called_once_with(
-                            "ai_test-branch", 100
+                            "test-branch", 100
                         )
 
     def test_logs_agent_not_found(self, temp_dir):
@@ -155,10 +155,10 @@ class TestLogsCommand:
                             branch="test-branch",
                             worktree="/path/worktree",
                             session="ai_test-branch",
-                            pid=12345,
                             batch_id="batch1",
                             agent="claude",
                             created_at=datetime.now().isoformat(),
+                            pid=12345,
                         )
                         mock_state.return_value.get_agent.return_value = agent
 
@@ -196,10 +196,10 @@ class TestLogsCommand:
                             branch="test-branch",
                             worktree="/path/worktree",
                             session="ai_test-branch",
-                            pid=12345,
                             batch_id="batch1",
                             agent="claude",
                             created_at=datetime.now().isoformat(),
+                            pid=12345,
                         )
                         mock_state.return_value.get_agent.return_value = agent
 

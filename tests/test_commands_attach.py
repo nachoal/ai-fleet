@@ -34,10 +34,10 @@ class TestAttachCommand:
                             branch="test-branch",
                             worktree="/path/worktree",
                             session="ai_test-branch",
-                            pid=12345,
                             batch_id="batch1",
                             agent="claude",
                             created_at=datetime.now().isoformat(),
+                            pid=12345,
                         )
                         mock_state.return_value.get_agent.return_value = agent
 
@@ -57,10 +57,10 @@ class TestAttachCommand:
                             "test-branch"
                         )
                         mock_tmux.return_value.session_exists.assert_called_once_with(
-                            "ai_test-branch"
+                            "test-branch"
                         )
                         mock_tmux.return_value.attach_session.assert_called_once_with(
-                            "ai_test-branch"
+                            "test-branch"
                         )
 
     def test_attach_agent_not_found(self, temp_dir):
@@ -110,10 +110,10 @@ class TestAttachCommand:
                             branch="test-branch",
                             worktree="/path/worktree",
                             session="ai_test-branch",
-                            pid=12345,
                             batch_id="batch1",
                             agent="claude",
                             created_at=datetime.now().isoformat(),
+                            pid=12345,
                         )
                         mock_state.return_value.get_agent.return_value = agent
 

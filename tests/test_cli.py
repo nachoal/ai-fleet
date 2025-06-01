@@ -106,6 +106,7 @@ class TestCLI:
 class TestCreateCommand:
     """Test create command."""
 
+    @patch("aifleet.commands.create.verify_agent_command")
     @patch("aifleet.commands.create.TmuxManager")
     @patch("aifleet.commands.create.WorktreeManager")
     @patch("aifleet.commands.create.StateManager")
@@ -118,6 +119,7 @@ class TestCreateCommand:
         mock_state_class,
         mock_worktree_class,
         mock_tmux_class,
+        mock_verify_agent,
         temp_dir,
     ):
         """Test basic agent creation."""
@@ -135,6 +137,9 @@ class TestCreateCommand:
 
         mock_ensure_config_base.return_value = mock_config
         mock_ensure_config_create.return_value = mock_config
+
+        # Mock agent verification
+        mock_verify_agent.return_value = True
 
         # Mock state
         mock_state = MagicMock()
@@ -171,6 +176,7 @@ class TestCreateCommand:
         mock_tmux.send_command.assert_called_once()
         mock_state.add_agent.assert_called_once()
 
+    @patch("aifleet.commands.create.verify_agent_command")
     @patch("aifleet.commands.create.StateManager")
     @patch("aifleet.commands.create.ensure_project_config")
     @patch("aifleet.commands.base.ensure_project_config")
@@ -179,6 +185,7 @@ class TestCreateCommand:
         mock_ensure_config_base,
         mock_ensure_config_create,
         mock_state_class,
+        mock_verify_agent,
         temp_dir,
     ):
         """Test creating agent that already exists."""
@@ -186,8 +193,12 @@ class TestCreateCommand:
         mock_config = MagicMock()
         mock_config.project_root = temp_dir
         mock_config.repo_root = temp_dir
+        mock_config.default_agent = "claude"
         mock_ensure_config_base.return_value = mock_config
         mock_ensure_config_create.return_value = mock_config
+
+        # Mock agent verification
+        mock_verify_agent.return_value = True
 
         # Mock existing agent
         mock_state = MagicMock()
@@ -270,19 +281,19 @@ class TestListCommand:
                 branch="branch1",
                 worktree="/path1",
                 session="ai_branch1",
-                pid=12345,
                 batch_id="batch1",
                 agent="claude",
                 created_at=datetime.now().isoformat(),
+                pid=12345,
             ),
             Agent(
                 branch="branch2",
                 worktree="/path2",
                 session="ai_branch2",
-                pid=12346,
                 batch_id="batch1",
                 agent="claude",
                 created_at=datetime.now().isoformat(),
+                pid=12346,
             ),
         ]
 
@@ -346,10 +357,10 @@ class TestListCommand:
                 branch=f"branch{i}",
                 worktree=f"/path{i}",
                 session=f"ai_branch{i}",
-                pid=12345 + i,
                 batch_id="batch1" if i < 2 else "batch2",
                 agent="claude",
                 created_at=datetime.now().isoformat(),
+                pid=12345 + i,
             )
             for i in range(4)
         ]

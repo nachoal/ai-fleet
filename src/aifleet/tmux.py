@@ -229,7 +229,7 @@ class TmuxManager:
             info = {
                 "name": session_name,
                 "created": session.get("session_created", ""),
-                "attached": session.get("session_attached", 0) > 0,
+                "attached": int(session.get("session_attached", "0")) > 0,
                 "windows": len(session.list_windows()),
             }
 

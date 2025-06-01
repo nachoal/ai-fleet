@@ -28,14 +28,14 @@ def logs(branch: str, lines: int) -> None:
         raise SystemExit(1)
 
     # Check if session exists
-    if not tmux.session_exists(agent.session):
+    if not tmux.session_exists(branch):
         click.echo(f"Session '{agent.session}' not found")
         # Clean up state
         state.remove_agent(branch)
         raise SystemExit(1)
 
     # Get session output
-    output = tmux.get_session_output(agent.session, lines)
+    output = tmux.get_session_output(branch, lines)
     if output:
         click.echo(output)
     else:

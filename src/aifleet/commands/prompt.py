@@ -28,14 +28,14 @@ def prompt(branch: str, message: str) -> None:
         raise SystemExit(1)
 
     # Check if session exists
-    if not tmux.session_exists(agent.session):
+    if not tmux.session_exists(branch):
         click.echo(f"Session '{agent.session}' not found")
         # Clean up state
         state.remove_agent(branch)
         raise SystemExit(1)
 
     # Send the prompt
-    success = tmux.send_command(agent.session, message)
+    success = tmux.send_command(branch, message)
     if success:
         click.echo(f"Sent prompt to agent on branch '{branch}'")
     else:

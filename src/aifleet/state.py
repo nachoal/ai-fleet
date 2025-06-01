@@ -15,10 +15,10 @@ class Agent:
     branch: str
     worktree: str
     session: str
-    pid: Optional[int]
     batch_id: str
     agent: str
     created_at: str
+    pid: Optional[int] = None
     prompt: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
