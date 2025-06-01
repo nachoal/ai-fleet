@@ -2,9 +2,9 @@
 
 import click
 
-from ..config import ConfigManager
 from ..state import StateManager
 from ..tmux import TmuxManager
+from .base import ensure_project_config
 
 
 @click.command()
@@ -17,7 +17,7 @@ def prompt(branch: str, message: str) -> None:
         branch: The branch name of the agent
         message: The prompt message to send
     """
-    config = ConfigManager()
+    config = ensure_project_config()
     state = StateManager(config.repo_root)
     tmux = TmuxManager(config.tmux_prefix)
 

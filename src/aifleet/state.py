@@ -34,13 +34,19 @@ class Agent:
 class StateManager:
     """Manages AI Fleet agent state."""
 
-    def __init__(self, state_dir: Optional[Path] = None):
+    def __init__(self, project_root: Optional[Path] = None):
         """Initialize state manager.
 
         Args:
-            state_dir: Override state directory (mainly for testing)
+            project_root: Project root directory
+                (will store state in .aifleet/state.json)
         """
-        self.state_dir = state_dir or Path.home() / ".ai_fleet"
+        if project_root:
+            # Project-based state (new behavior)
+            self.state_dir = project_root / ".aifleet"
+        else:
+            # Legacy global state (for backward compatibility)
+            self.state_dir = Path.home() / ".ai_fleet"
         self.state_file = self.state_dir / "state.json"
         self._ensure_state_dir()
 

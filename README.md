@@ -30,8 +30,11 @@ uv pip install -e .
 # Set up your API key
 export ANTHROPIC_API_KEY=sk-...
 
-# Initialize configuration
-fleet config --edit
+# Navigate to your project
+cd /path/to/your/project
+
+# Initialize AI Fleet in your project
+fleet init
 
 # Create your first agent
 fleet create fix-auth --prompt "Fix the authentication bug in login.py"
@@ -69,6 +72,19 @@ pip install ai-fleet
 ### From Source (Development)
 
 See [Development Setup](#development-setup) section below.
+
+---
+
+## Key Concepts
+
+### Project-Based Configuration
+
+AI Fleet works on a per-project basis. Each git repository you want to use AI Fleet with needs to be initialized:
+
+1. **One config per project**: Configuration lives in `.aifleet/config.toml` within your project
+2. **Automatic detection**: Commands work from any subdirectory within your project
+3. **Isolated state**: Each project maintains its own agent state and worktrees
+4. **Team friendly**: Configuration can be committed and shared with your team
 
 ---
 
@@ -204,13 +220,23 @@ Each agent gets:
 
 ### Configuration Commands
 
-#### `fleet config [--edit] [--validate]`
+#### `fleet init [--type TYPE] [--migrate-legacy]`
+Initialize AI Fleet in the current project.
+
+```bash
+fleet init                    # Auto-detect project type
+fleet init --type rails       # Initialize as Rails project
+fleet init --migrate-legacy   # Import from old global config
+```
+
+#### `fleet config [--edit] [--validate] [--show-origin]`
 Manage AI Fleet configuration.
 
 ```bash
-fleet config           # Show current config
-fleet config --edit    # Open in $EDITOR
-fleet config --validate # Check configuration
+fleet config              # Show current project config
+fleet config --edit       # Edit project config in $EDITOR
+fleet config --validate   # Check configuration validity
+fleet config --show-origin # Show where each setting comes from
 ```
 
 #### `fleet update [--check] [--force]`
@@ -228,36 +254,42 @@ The update command automatically detects your installation method (pipx, pip, uv
 
 ## Configuration
 
-Configuration file location: `~/.ai_fleet/config.toml`
+AI Fleet uses project-based configuration. Each project has its own `.aifleet/config.toml` file.
 
-### Basic Configuration
+### Initializing a Project
 
-```toml
-# Repository settings
-repo_root = "/path/to/your/project"     # Your main repository
-worktree_root = "~/.ai_fleet/worktrees" # Where to create worktrees
+```bash
+# Navigate to your git repository
+cd /path/to/your/project
 
-# Agent settings
-tmux_prefix = "ai_"      # Prefix for tmux session names
-default_agent = "claude"  # Default AI agent
-claude_flags = "--dangerously-skip-permissions"
+# Initialize AI Fleet
+fleet init
 
-# Quick setup mode (skip heavy commands)
-quick_setup = false
+# Or initialize with a specific project type
+fleet init --type rails  # Rails project with sensible defaults
+fleet init --type node   # Node.js project
+fleet init --type python # Python project
 ```
 
-### Project-Specific Setup
+### Configuration Structure
 
 ```toml
-# Files to copy from main repo to each worktree
+# .aifleet/config.toml - Project configuration
+[project]
+name = "my-awesome-project"
+worktree_root = "~/.aifleet/worktrees/my-awesome-project"
+
+[agent]
+default = "claude"
+claude_flags = "--dangerously-skip-permissions"
+
+[setup]
 credential_files = [
     "config/master.key",
     ".env",
     ".env.local"
 ]
-
-# Commands to run in each new worktree
-setup_commands = [
+commands = [
     "bundle install",
     "npm install",
     "bundle exec rails db:create db:migrate"
@@ -447,6 +479,40 @@ fleet create experiment --prompt "Try using Redis for session storage" --quick
 # Quick cleanup of all experimental branches
 fleet kill "experiment*"
 ```
+
+---
+
+## Migration Guide
+
+### Migrating from Global Configuration
+
+If you've been using an older version of AI Fleet with global configuration (`~/.ai_fleet/config.toml`), follow these steps:
+
+1. **Navigate to your project**
+   ```bash
+   cd /path/to/your/project
+   ```
+
+2. **Run migration**
+   ```bash
+   fleet init --migrate-legacy
+   ```
+
+3. **Review the migrated configuration**
+   ```bash
+   fleet config
+   ```
+
+4. **Remove old global config (optional)**
+   ```bash
+   rm ~/.ai_fleet/config.toml.backup  # After verifying everything works
+   ```
+
+### What's Changed
+
+- **Old**: Single global config at `~/.ai_fleet/config.toml`
+- **New**: Per-project config at `.aifleet/config.toml`
+- **Benefit**: Work on multiple projects without config switching
 
 ---
 

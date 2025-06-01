@@ -5,10 +5,10 @@ from datetime import datetime
 
 import click
 
-from ..config import ConfigManager
 from ..state import Agent, StateManager
 from ..tmux import TmuxManager
 from ..worktree import WorktreeManager
+from .base import ensure_project_config
 
 
 @click.command()
@@ -22,8 +22,8 @@ def create(branch: str, prompt: str, agent: str):
     and starts the AI agent with an optional prompt.
     """
     # Load configuration
-    config = ConfigManager()
-    state = StateManager()
+    config = ensure_project_config()
+    state = StateManager(config.repo_root)
 
     # Use configured agent if not specified
     if not agent:

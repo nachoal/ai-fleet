@@ -5,11 +5,11 @@ from datetime import datetime
 
 import click
 
-from ..config import ConfigManager
 from ..state import Agent, StateManager
 from ..tmux import TmuxManager
 from ..utils import generate_batch_id, safe_branch_name
 from ..worktree import WorktreeManager
+from .base import ensure_project_config
 
 
 def generate_suffix(index: int) -> str:
@@ -45,7 +45,7 @@ def fanout(count: int, prefix: str, prompt: str, agent: str, quick: bool) -> Non
         click.echo("Count cannot exceed 100")
         raise SystemExit(1)
 
-    config = ConfigManager()
+    config = ensure_project_config()
     state = StateManager(config.repo_root)
     tmux = TmuxManager(config.tmux_prefix)
     worktree = WorktreeManager(config.repo_root, config.worktree_root)

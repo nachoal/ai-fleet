@@ -7,6 +7,7 @@ import click
 from .commands.attach import attach
 from .commands.create import create
 from .commands.fanout import fanout
+from .commands.init import init
 from .commands.kill import kill
 from .commands.list import list
 from .commands.logs import logs
@@ -24,17 +25,14 @@ def cli():
     Spin up and command a fleet of AI developer agents from your terminal.
     Each agent runs in its own git worktree with an isolated tmux session.
     """
-    # Ensure config exists
-    config = ConfigManager()
-    if not config.config_file.exists():
-        click.echo("Creating default configuration...", err=True)
-        config.create_default_config()
+    pass
 
 
 @cli.command()
 @click.option("--edit", "-e", is_flag=True, help="Open config file in editor")
 @click.option("--validate", "-v", is_flag=True, help="Validate configuration")
-def config(edit: bool, validate: bool):
+@click.option("--show-origin", is_flag=True, help="Show where each setting comes from")
+def config(edit: bool, validate: bool, show_origin: bool):
     """Manage AI Fleet configuration."""
     config_mgr = ConfigManager()
 
@@ -42,8 +40,13 @@ def config(edit: bool, validate: bool):
         import os
         import subprocess
 
+        if not config_mgr.has_project_config:
+            click.echo("❌ No project configuration found.", err=True)
+            click.echo("Run 'fleet init' to initialize this project.", err=True)
+            sys.exit(1)
+
         editor = os.environ.get("EDITOR", "nano")
-        subprocess.run([editor, str(config_mgr.config_file)])
+        subprocess.run([editor, str(config_mgr.project_config_file)])
     elif validate:
         errors = config_mgr.validate()
         if errors:
@@ -53,15 +56,36 @@ def config(edit: bool, validate: bool):
             sys.exit(1)
         else:
             click.echo("✅ Configuration is valid")
+    elif show_origin:
+        # Show config with sources
+        info = config_mgr.get_config_info()
+        click.echo("Configuration sources:")
+        click.echo(f"  Project root: {info['project_root'] or 'Not in git repository'}")
+        click.echo(f"  Project config: {info['project_config'] or 'None'}")
+        click.echo(f"  User config: {info['user_config']}")
+        click.echo(f"  Using defaults: {info['using_defaults']}")
     else:
         # Show current config
-        click.echo(f"Configuration file: {config_mgr.config_file}")
+        if not config_mgr.is_git_repository:
+            click.echo("❌ Not in a git repository", err=True)
+            sys.exit(1)
+
+        if not config_mgr.has_project_config:
+            click.echo("❌ No project configuration found.", err=True)
+            click.echo("\nRun 'fleet init' to initialize this project.", err=True)
+            sys.exit(1)
+
+        if config_mgr.project_root:
+            click.echo(f"Project: {config_mgr.project_root.name}")
+        click.echo(f"Configuration file: {config_mgr.project_config_file}")
         click.echo("\nCurrent settings:")
-        with open(config_mgr.config_file, "r") as f:
-            click.echo(f.read())
+        if config_mgr.project_config_file:
+            with open(config_mgr.project_config_file, "r") as f:
+                click.echo(f.read())
 
 
 # Add commands to CLI
+cli.add_command(init)
 cli.add_command(create)
 cli.add_command(list)
 cli.add_command(prompt)
