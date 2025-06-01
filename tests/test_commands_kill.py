@@ -148,46 +148,46 @@ class TestKillCommand:
                                 # Setup mocks - patch both base and kill module
                                 mock_config = mock_ensure_config_base.return_value
                                 mock_ensure_config_kill.return_value = mock_config
-                            mock_config.repo_root = temp_dir
-                            mock_config.project_root = temp_dir
-                            mock_config.worktree_root = (
-                                temp_dir / "worktrees"
-                            )
+                                mock_config.repo_root = temp_dir
+                                mock_config.project_root = temp_dir
+                                mock_config.worktree_root = (
+                                    temp_dir / "worktrees"
+                                )
 
-                            # Mock agents in batch
-                            agents = [
-                                Agent(
-                                    branch="branch1",
-                                    worktree="/path/worktree1",
-                                    session="ai_branch1",
-                                    pid=12345,
-                                    batch_id="batch1",
-                                    agent="claude",
-                                    created_at=datetime.now().isoformat(),
-                                ),
-                                Agent(
-                                    branch="branch2",
-                                    worktree="/path/worktree2",
-                                    session="ai_branch2",
-                                    pid=12346,
-                                    batch_id="batch1",
-                                    agent="claude",
-                                    created_at=datetime.now().isoformat(),
-                                ),
-                            ]
-                            mock_state.return_value.list_agents.return_value = agents
+                                # Mock agents in batch
+                                agents = [
+                                    Agent(
+                                        branch="branch1",
+                                        worktree="/path/worktree1",
+                                        session="ai_branch1",
+                                        pid=12345,
+                                        batch_id="batch1",
+                                        agent="claude",
+                                        created_at=datetime.now().isoformat(),
+                                    ),
+                                    Agent(
+                                        branch="branch2",
+                                        worktree="/path/worktree2",
+                                        session="ai_branch2",
+                                        pid=12346,
+                                        batch_id="batch1",
+                                        agent="claude",
+                                        created_at=datetime.now().isoformat(),
+                                    ),
+                                ]
+                                mock_state.return_value.list_agents.return_value = agents
 
-                            # Mock tmux operations
-                            mock_tmux.return_value.session_exists.return_value = True
+                                # Mock tmux operations
+                                mock_tmux.return_value.session_exists.return_value = True
 
-                            # Run command with batch flag
-                            runner = CliRunner()
-                            result = runner.invoke(kill, ["--batch", "batch1"])
-                            assert result.exit_code == 0
+                                # Run command with batch flag
+                                runner = CliRunner()
+                                result = runner.invoke(kill, ["--batch", "batch1"])
+                                assert result.exit_code == 0
 
-                            # Should kill all agents in batch
-                            assert mock_tmux.return_value.kill_session.call_count == 2
-                            assert mock_state.return_value.remove_agent.call_count == 2
+                                # Should kill all agents in batch
+                                assert mock_tmux.return_value.kill_session.call_count == 2
+                                assert mock_state.return_value.remove_agent.call_count == 2
 
     def test_kill_force_no_confirmation(self, temp_dir):
         """Test force kill without confirmation."""
@@ -202,36 +202,36 @@ class TestKillCommand:
                                 # Setup mocks - patch both base and kill module
                                 mock_config = mock_ensure_config_base.return_value
                                 mock_ensure_config_kill.return_value = mock_config
-                            mock_config.repo_root = temp_dir
-                            mock_config.project_root = temp_dir
-                            mock_config.worktree_root = (
-                                temp_dir / "worktrees"
-                            )
+                                mock_config.repo_root = temp_dir
+                                mock_config.project_root = temp_dir
+                                mock_config.worktree_root = (
+                                    temp_dir / "worktrees"
+                                )
 
-                            # Mock agent
-                            agent = Agent(
-                                branch="test-branch",
-                                worktree="/path/worktree",
-                                session="ai_test-branch",
-                                pid=12345,
-                                batch_id="batch1",
-                                agent="claude",
-                                created_at=datetime.now().isoformat(),
-                            )
-                            mock_state.return_value.list_agents.return_value = [agent]
+                                # Mock agent
+                                agent = Agent(
+                                    branch="test-branch",
+                                    worktree="/path/worktree",
+                                    session="ai_test-branch",
+                                    pid=12345,
+                                    batch_id="batch1",
+                                    agent="claude",
+                                    created_at=datetime.now().isoformat(),
+                                )
+                                mock_state.return_value.list_agents.return_value = [agent]
 
-                            # Mock tmux operations
-                            mock_tmux.return_value.session_exists.return_value = True
+                                # Mock tmux operations
+                                mock_tmux.return_value.session_exists.return_value = True
 
-                            # Run command with force flag
-                            runner = CliRunner()
-                            result = runner.invoke(kill, ["--force", "test-branch"])
-                            assert result.exit_code == 0
+                                # Run command with force flag
+                                runner = CliRunner()
+                                result = runner.invoke(kill, ["--force", "test-branch"])
+                                assert result.exit_code == 0
 
-                            # Should not ask for confirmation
-                            mock_confirm.assert_not_called()
-                            # But should still kill
-                            mock_tmux.return_value.kill_session.assert_called_once()
+                                # Should not ask for confirmation
+                                mock_confirm.assert_not_called()
+                                # But should still kill
+                                mock_tmux.return_value.kill_session.assert_called_once()
 
     def test_kill_no_agents_found(self, temp_dir):
         """Test kill when no agents match."""
