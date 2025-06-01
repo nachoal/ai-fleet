@@ -14,8 +14,12 @@ class TestAttachCommand:
 
     def test_attach_success(self, temp_dir):
         """Test attaching to existing agent session."""
-        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config_base:
-            with patch("aifleet.commands.attach.ensure_project_config") as mock_ensure_config_attach:
+        with patch(
+            "aifleet.commands.base.ensure_project_config"
+        ) as mock_ensure_config_base:
+            with patch(
+                "aifleet.commands.attach.ensure_project_config"
+            ) as mock_ensure_config_attach:
                 with patch("aifleet.commands.attach.StateManager") as mock_state:
                     with patch("aifleet.commands.attach.TmuxManager") as mock_tmux:
                         # Setup mocks - patch both base and attach module
@@ -61,8 +65,12 @@ class TestAttachCommand:
 
     def test_attach_agent_not_found(self, temp_dir):
         """Test attach when agent doesn't exist."""
-        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config_base:
-            with patch("aifleet.commands.attach.ensure_project_config") as mock_ensure_config_attach:
+        with patch(
+            "aifleet.commands.base.ensure_project_config"
+        ) as mock_ensure_config_base:
+            with patch(
+                "aifleet.commands.attach.ensure_project_config"
+            ) as mock_ensure_config_attach:
                 with patch("aifleet.commands.attach.StateManager") as mock_state:
                     with patch("aifleet.commands.attach.TmuxManager") as _:
                         # Setup mocks - patch both base and attach module
@@ -82,8 +90,12 @@ class TestAttachCommand:
 
     def test_attach_session_not_found(self, temp_dir):
         """Test attach when tmux session doesn't exist."""
-        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config_base:
-            with patch("aifleet.commands.attach.ensure_project_config") as mock_ensure_config_attach:
+        with patch(
+            "aifleet.commands.base.ensure_project_config"
+        ) as mock_ensure_config_base:
+            with patch(
+                "aifleet.commands.attach.ensure_project_config"
+            ) as mock_ensure_config_attach:
                 with patch("aifleet.commands.attach.StateManager") as mock_state:
                     with patch("aifleet.commands.attach.TmuxManager") as mock_tmux:
                         # Setup mocks - patch both base and attach module

@@ -132,7 +132,7 @@ class TestCreateCommand:
         mock_config.setup_commands = []
         mock_config.quick_setup = False
         mock_config.project_root = temp_dir / "repo"
-        
+
         mock_ensure_config_base.return_value = mock_config
         mock_ensure_config_create.return_value = mock_config
 
@@ -174,7 +174,13 @@ class TestCreateCommand:
     @patch("aifleet.commands.create.StateManager")
     @patch("aifleet.commands.create.ensure_project_config")
     @patch("aifleet.commands.base.ensure_project_config")
-    def test_create_existing_agent(self, mock_ensure_config_base, mock_ensure_config_create, mock_state_class, temp_dir):
+    def test_create_existing_agent(
+        self,
+        mock_ensure_config_base,
+        mock_ensure_config_create,
+        mock_state_class,
+        temp_dir,
+    ):
         """Test creating agent that already exists."""
         # Mock config
         mock_config = MagicMock()
@@ -182,7 +188,7 @@ class TestCreateCommand:
         mock_config.repo_root = temp_dir
         mock_ensure_config_base.return_value = mock_config
         mock_ensure_config_create.return_value = mock_config
-        
+
         # Mock existing agent
         mock_state = MagicMock()
         mock_state.get_agent.return_value = MagicMock()  # Agent exists
@@ -202,14 +208,21 @@ class TestListCommand:
     @patch("aifleet.commands.list.StateManager")
     @patch("aifleet.commands.list.ensure_project_config")
     @patch("aifleet.commands.base.ensure_project_config")
-    def test_list_empty(self, mock_ensure_config_base, mock_ensure_config_list, mock_state_class, mock_tmux_class, temp_dir):
+    def test_list_empty(
+        self,
+        mock_ensure_config_base,
+        mock_ensure_config_list,
+        mock_state_class,
+        mock_tmux_class,
+        temp_dir,
+    ):
         """Test listing with no agents."""
         # Mock config
         mock_config = MagicMock()
         mock_config.project_root = temp_dir
         mock_ensure_config_base.return_value = mock_config
         mock_ensure_config_list.return_value = mock_config
-        
+
         # Mock empty state
         mock_state = MagicMock()
         mock_state.list_agents.return_value = []
@@ -232,7 +245,13 @@ class TestListCommand:
     @patch("aifleet.commands.list.ensure_project_config")
     @patch("aifleet.commands.base.ensure_project_config")
     def test_list_agents(
-        self, mock_ensure_config_base, mock_ensure_config_list, mock_state_class, mock_tmux_class, mock_psutil, temp_dir
+        self,
+        mock_ensure_config_base,
+        mock_ensure_config_list,
+        mock_state_class,
+        mock_tmux_class,
+        mock_psutil,
+        temp_dir,
     ):
         """Test listing active agents."""
         from datetime import datetime
@@ -244,7 +263,7 @@ class TestListCommand:
         mock_config.project_root = temp_dir
         mock_ensure_config_base.return_value = mock_config
         mock_ensure_config_list.return_value = mock_config
-        
+
         # Mock agents
         agents = [
             Agent(
@@ -302,7 +321,13 @@ class TestListCommand:
     @patch("aifleet.commands.list.ensure_project_config")
     @patch("aifleet.commands.base.ensure_project_config")
     def test_list_grouped(
-        self, mock_ensure_config_base, mock_ensure_config_list, mock_state_class, mock_tmux_class, mock_psutil, temp_dir
+        self,
+        mock_ensure_config_base,
+        mock_ensure_config_list,
+        mock_state_class,
+        mock_tmux_class,
+        mock_psutil,
+        temp_dir,
     ):
         """Test listing agents grouped by batch."""
         from datetime import datetime
@@ -314,7 +339,7 @@ class TestListCommand:
         mock_config.project_root = temp_dir
         mock_ensure_config_base.return_value = mock_config
         mock_ensure_config_list.return_value = mock_config
-        
+
         # Mock agents in different batches
         agents = [
             Agent(

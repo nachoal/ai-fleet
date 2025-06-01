@@ -238,6 +238,7 @@ class ConfigManager:
         project_name = self.project_root.name
         # Deep copy the default config to avoid modifying the class attribute
         import copy
+
         config: Dict[str, Any] = copy.deepcopy(self.DEFAULT_PROJECT_CONFIG)
         config["project"]["name"] = project_name
 

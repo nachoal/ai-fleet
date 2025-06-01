@@ -15,8 +15,12 @@ class TestKillCommand:
 
     def test_kill_single_agent(self, temp_dir):
         """Test killing a single agent."""
-        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config_base:
-            with patch("aifleet.commands.kill.ensure_project_config") as mock_ensure_config_kill:
+        with patch(
+            "aifleet.commands.base.ensure_project_config"
+        ) as mock_ensure_config_base:
+            with patch(
+                "aifleet.commands.kill.ensure_project_config"
+            ) as mock_ensure_config_kill:
                 with patch("aifleet.commands.kill.StateManager") as mock_state:
                     with patch("aifleet.commands.kill.TmuxManager") as mock_tmux:
                         with patch(
@@ -30,9 +34,7 @@ class TestKillCommand:
                                 mock_ensure_config_kill.return_value = mock_config
                                 mock_config.repo_root = temp_dir
                                 mock_config.project_root = temp_dir
-                                mock_config.worktree_root = (
-                                    temp_dir / "worktrees"
-                                )
+                                mock_config.worktree_root = temp_dir / "worktrees"
                                 mock_config.tmux_prefix = "ai_"
 
                                 # Mock agent
@@ -45,10 +47,14 @@ class TestKillCommand:
                                     agent="claude",
                                     created_at=datetime.now().isoformat(),
                                 )
-                                mock_state.return_value.list_agents.return_value = [agent]
+                                mock_state.return_value.list_agents.return_value = [
+                                    agent
+                                ]
 
                                 # Mock tmux operations
-                                mock_tmux.return_value.session_exists.return_value = True
+                                mock_tmux.return_value.session_exists.return_value = (
+                                    True
+                                )
 
                                 # Run command
                                 runner = CliRunner()
@@ -68,8 +74,12 @@ class TestKillCommand:
 
     def test_kill_with_glob_pattern(self, temp_dir):
         """Test killing agents with glob pattern."""
-        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config_base:
-            with patch("aifleet.commands.kill.ensure_project_config") as mock_ensure_config_kill:
+        with patch(
+            "aifleet.commands.base.ensure_project_config"
+        ) as mock_ensure_config_base:
+            with patch(
+                "aifleet.commands.kill.ensure_project_config"
+            ) as mock_ensure_config_kill:
                 with patch("aifleet.commands.kill.StateManager") as mock_state:
                     with patch("aifleet.commands.kill.TmuxManager") as mock_tmux:
                         with patch("aifleet.commands.kill.WorktreeManager") as _:
@@ -81,9 +91,7 @@ class TestKillCommand:
                                 mock_ensure_config_kill.return_value = mock_config
                                 mock_config.repo_root = temp_dir
                                 mock_config.project_root = temp_dir
-                                mock_config.worktree_root = (
-                                    temp_dir / "worktrees"
-                                )
+                                mock_config.worktree_root = temp_dir / "worktrees"
 
                                 # Mock multiple agents
                                 agents = [
@@ -115,10 +123,14 @@ class TestKillCommand:
                                         created_at=datetime.now().isoformat(),
                                     ),
                                 ]
-                                mock_state.return_value.list_agents.return_value = agents
+                                mock_state.return_value.list_agents.return_value = (
+                                    agents
+                                )
 
                                 # Mock tmux operations
-                                mock_tmux.return_value.session_exists.return_value = True
+                                mock_tmux.return_value.session_exists.return_value = (
+                                    True
+                                )
 
                                 # Run command with glob pattern
                                 runner = CliRunner()
@@ -126,8 +138,12 @@ class TestKillCommand:
                                 assert result.exit_code == 0
 
                                 # Should kill only matching agents
-                                assert mock_tmux.return_value.kill_session.call_count == 2
-                                assert mock_state.return_value.remove_agent.call_count == 2
+                                assert (
+                                    mock_tmux.return_value.kill_session.call_count == 2
+                                )
+                                assert (
+                                    mock_state.return_value.remove_agent.call_count == 2
+                                )
                                 mock_state.return_value.remove_agent.assert_any_call(
                                     "auth-refactor-A"
                                 )
@@ -137,8 +153,12 @@ class TestKillCommand:
 
     def test_kill_batch(self, temp_dir):
         """Test killing all agents in a batch."""
-        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config_base:
-            with patch("aifleet.commands.kill.ensure_project_config") as mock_ensure_config_kill:
+        with patch(
+            "aifleet.commands.base.ensure_project_config"
+        ) as mock_ensure_config_base:
+            with patch(
+                "aifleet.commands.kill.ensure_project_config"
+            ) as mock_ensure_config_kill:
                 with patch("aifleet.commands.kill.StateManager") as mock_state:
                     with patch("aifleet.commands.kill.TmuxManager") as mock_tmux:
                         with patch("aifleet.commands.kill.WorktreeManager") as _:
@@ -150,9 +170,7 @@ class TestKillCommand:
                                 mock_ensure_config_kill.return_value = mock_config
                                 mock_config.repo_root = temp_dir
                                 mock_config.project_root = temp_dir
-                                mock_config.worktree_root = (
-                                    temp_dir / "worktrees"
-                                )
+                                mock_config.worktree_root = temp_dir / "worktrees"
 
                                 # Mock agents in batch
                                 agents = [
@@ -175,10 +193,14 @@ class TestKillCommand:
                                         created_at=datetime.now().isoformat(),
                                     ),
                                 ]
-                                mock_state.return_value.list_agents.return_value = agents
+                                mock_state.return_value.list_agents.return_value = (
+                                    agents
+                                )
 
                                 # Mock tmux operations
-                                mock_tmux.return_value.session_exists.return_value = True
+                                mock_tmux.return_value.session_exists.return_value = (
+                                    True
+                                )
 
                                 # Run command with batch flag
                                 runner = CliRunner()
@@ -186,13 +208,21 @@ class TestKillCommand:
                                 assert result.exit_code == 0
 
                                 # Should kill all agents in batch
-                                assert mock_tmux.return_value.kill_session.call_count == 2
-                                assert mock_state.return_value.remove_agent.call_count == 2
+                                assert (
+                                    mock_tmux.return_value.kill_session.call_count == 2
+                                )
+                                assert (
+                                    mock_state.return_value.remove_agent.call_count == 2
+                                )
 
     def test_kill_force_no_confirmation(self, temp_dir):
         """Test force kill without confirmation."""
-        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config_base:
-            with patch("aifleet.commands.kill.ensure_project_config") as mock_ensure_config_kill:
+        with patch(
+            "aifleet.commands.base.ensure_project_config"
+        ) as mock_ensure_config_base:
+            with patch(
+                "aifleet.commands.kill.ensure_project_config"
+            ) as mock_ensure_config_kill:
                 with patch("aifleet.commands.kill.StateManager") as mock_state:
                     with patch("aifleet.commands.kill.TmuxManager") as mock_tmux:
                         with patch("aifleet.commands.kill.WorktreeManager") as _:
@@ -204,9 +234,7 @@ class TestKillCommand:
                                 mock_ensure_config_kill.return_value = mock_config
                                 mock_config.repo_root = temp_dir
                                 mock_config.project_root = temp_dir
-                                mock_config.worktree_root = (
-                                    temp_dir / "worktrees"
-                                )
+                                mock_config.worktree_root = temp_dir / "worktrees"
 
                                 # Mock agent
                                 agent = Agent(
@@ -218,10 +246,14 @@ class TestKillCommand:
                                     agent="claude",
                                     created_at=datetime.now().isoformat(),
                                 )
-                                mock_state.return_value.list_agents.return_value = [agent]
+                                mock_state.return_value.list_agents.return_value = [
+                                    agent
+                                ]
 
                                 # Mock tmux operations
-                                mock_tmux.return_value.session_exists.return_value = True
+                                mock_tmux.return_value.session_exists.return_value = (
+                                    True
+                                )
 
                                 # Run command with force flag
                                 runner = CliRunner()
@@ -235,8 +267,12 @@ class TestKillCommand:
 
     def test_kill_no_agents_found(self, temp_dir):
         """Test kill when no agents match."""
-        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config_base:
-            with patch("aifleet.commands.kill.ensure_project_config") as mock_ensure_config_kill:
+        with patch(
+            "aifleet.commands.base.ensure_project_config"
+        ) as mock_ensure_config_base:
+            with patch(
+                "aifleet.commands.kill.ensure_project_config"
+            ) as mock_ensure_config_kill:
                 with patch("aifleet.commands.kill.StateManager") as mock_state:
                     with patch("aifleet.commands.kill.TmuxManager") as _:
                         with patch("aifleet.commands.kill.WorktreeManager") as _:
@@ -254,13 +290,18 @@ class TestKillCommand:
 
     def test_kill_cancelled_by_user(self, temp_dir):
         """Test kill cancelled by user confirmation."""
-        with patch("aifleet.commands.base.ensure_project_config") as mock_ensure_config_base:
-            with patch("aifleet.commands.kill.ensure_project_config") as mock_ensure_config_kill:
+        with patch(
+            "aifleet.commands.base.ensure_project_config"
+        ) as mock_ensure_config_base:
+            with patch(
+                "aifleet.commands.kill.ensure_project_config"
+            ) as mock_ensure_config_kill:
                 with patch("aifleet.commands.kill.StateManager") as mock_state:
                     with patch("aifleet.commands.kill.TmuxManager") as mock_tmux:
                         with patch("aifleet.commands.kill.WorktreeManager") as _:
                             with patch(
-                                "aifleet.commands.kill.click.confirm", return_value=False
+                                "aifleet.commands.kill.click.confirm",
+                                return_value=False,
                             ):
                                 # Setup mocks - patch both base and kill module
                                 mock_config = mock_ensure_config_base.return_value
@@ -278,7 +319,9 @@ class TestKillCommand:
                                     agent="claude",
                                     created_at=datetime.now().isoformat(),
                                 )
-                                mock_state.return_value.list_agents.return_value = [agent]
+                                mock_state.return_value.list_agents.return_value = [
+                                    agent
+                                ]
 
                                 # Run command and expect exit
                                 runner = CliRunner()
