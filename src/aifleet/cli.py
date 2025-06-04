@@ -17,7 +17,7 @@ from .commands.update import update
 from .config import ConfigManager
 
 
-@click.group()
+@click.group(context_settings={"help_option_names": ["-h", "--help"]})
 @click.version_option(package_name="ai-fleet")
 def cli():
     """AI Fleet - Manage AI coding agents in parallel.
@@ -95,6 +95,9 @@ cli.add_command(kill)
 cli.add_command(fanout)
 cli.add_command(multi)
 cli.add_command(update)
+
+# Add short alias for list command
+cli.add_command(list, name="l")
 
 
 # Create flt alias
