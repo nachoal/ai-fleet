@@ -18,7 +18,7 @@ from .base import ensure_project_config
 def multi(pairs: tuple, agent: str, quick: bool) -> None:
     """Create multiple agents with different prompts.
 
-    Usage: aim multi branch1:"prompt 1" branch2:"prompt 2" ...
+    Usage: fleet multi branch1:"prompt 1" branch2:"prompt 2" ...
 
     Args:
         pairs: Branch:prompt pairs
