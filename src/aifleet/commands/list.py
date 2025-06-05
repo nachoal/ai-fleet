@@ -7,12 +7,18 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import click
 import psutil
+from rich.console import Console
+from rich.live import Live
+from rich.table import Table
+from rich.text import Text
 
 from ..config import ConfigManager
 from ..state import StateManager
 from ..tmux import TmuxManager
 from ..utils import format_duration
 from .base import ensure_project_config
+
+console = Console()
 
 
 def get_process_stats(pid: Optional[int]) -> Tuple[float, float]:
@@ -33,14 +39,14 @@ def get_process_stats(pid: Optional[int]) -> Tuple[float, float]:
         return 0.0, 0.0
 
 
-def display_agents(
+def create_agents_table(
     config: ConfigManager,
     state: StateManager,
     tmux_mgr: TmuxManager,
     grouped: bool,
     all: bool,
-) -> None:
-    """Display agent list once."""
+) -> Table:
+    """Create a Rich table with agent data."""
 
     # Get active tmux sessions
     active_sessions = [name for name, _ in tmux_mgr.list_sessions()]
@@ -49,14 +55,15 @@ def display_agents(
     if not all:
         removed = state.reconcile_with_tmux(active_sessions)
         if removed:
-            click.echo(f"Cleaned up {len(removed)} dead agents from state", err=True)
+            msg = f"[dim]Cleaned up {len(removed)} dead agents from state[/dim]"
+            console.print(msg)
 
     # Get all agents
     agents = state.list_agents()
 
     if not agents:
-        click.echo("No active agents")
-        return
+        table = Table(title="No active agents", show_header=False)
+        return table
 
     # Collect agent data
     agent_data: List[Dict[str, Union[str, float]]] = []
@@ -90,24 +97,32 @@ def display_agents(
     else:
         agent_data.sort(key=lambda x: x["created"])
 
-    # Display header
-    click.echo(
-        "\n{:<25} {:<15} {:<8} {:<8} {:<8} {:<8} {:<16}".format(
-            "BRANCH", "BATCH", "AGENT", "STATUS", "CPU%", "MEM(MB)", "UPTIME"
-        )
+    # Create table
+    table = Table(
+        title="AI Fleet Agents",
+        caption=f"Last updated: {datetime.now().strftime('%H:%M:%S')}",
+        show_lines=grouped,
     )
-    click.echo("-" * 100)
 
-    # Display agents
+    # Add columns
+    table.add_column("BRANCH", style="cyan", overflow="fold")
+    table.add_column("BATCH", style="magenta")
+    table.add_column("AGENT", style="white")
+    table.add_column("STATUS", justify="center")
+    table.add_column("CPU%", justify="right", style="yellow")
+    table.add_column("MEM(MB)", justify="right", style="green")
+    table.add_column("UPTIME", style="dim")
+
+    # Add rows
     current_batch = None
     for data in agent_data:
         # Add batch separator if grouped
         if grouped and data["batch_id"] != current_batch:
             if current_batch is not None:
-                click.echo()
+                table.add_section()
             current_batch = data["batch_id"]
 
-        # Format row with status color coding
+        # Format status with color
         status_colors = {
             "ready": "green",
             "running": "yellow",
@@ -116,23 +131,19 @@ def display_agents(
             "unknown": "white",
         }
         status_color = status_colors.get(str(data["status"]), "white")
-        status_text = click.style(str(data["status"]), fg=status_color)
+        status_text = Text(str(data["status"]), style=status_color)
 
-        click.echo(
-            "{:<25} {:<15} {:<8} {} {:<8.1f} {:<8.0f} {:<16}".format(
-                str(data["branch"])[:25],
-                str(data["batch_id"])[:15],
-                str(data["agent"]),
-                status_text,
-                float(data["cpu"]),
-                float(data["memory"]),
-                str(data["uptime"]),
-            )
+        table.add_row(
+            str(data["branch"])[:25],
+            str(data["batch_id"])[:15],
+            str(data["agent"]),
+            status_text,
+            f"{float(data['cpu']):.1f}",
+            f"{float(data['memory']):.0f}",
+            str(data["uptime"]),
         )
 
-    # Summary
-    click.echo("\n" + "-" * 100)
-    # Count by status
+    # Add summary panel
     status_counts: Dict[str, int] = {}
     for d in agent_data:
         status = str(d["status"])
@@ -144,10 +155,13 @@ def display_agents(
     total_cpu = sum(float(d["cpu"]) for d in agent_data)
     total_memory = sum(float(d["memory"]) for d in agent_data)
 
-    click.echo(f"Total: {len(agent_data)} agents ({active_count} active)")
-    click.echo(f"Resources: {total_cpu:.1f}% CPU, {total_memory:.0f} MB RAM")
+    # Create summary text
+    summary_lines = [
+        f"Total: {len(agent_data)} agents ({active_count} active)",
+        f"Resources: {total_cpu:.1f}% CPU, {total_memory:.0f} MB RAM",
+    ]
 
-    # Show status breakdown
+    # Add status breakdown
     if status_counts:
         status_parts = []
         for status in ["ready", "running", "idle", "dead", "unknown"]:
@@ -161,8 +175,8 @@ def display_agents(
                     "unknown": "white",
                 }
                 color = status_colors.get(status, "white")
-                status_parts.append(click.style(f"{status}: {count}", fg=color))
-        click.echo("Status: " + ", ".join(status_parts))
+                status_parts.append(f"[{color}]{status}: {count}[/{color}]")
+        summary_lines.append("Status: " + ", ".join(status_parts))
 
     if grouped:
         batch_counts: Dict[str, int] = {}
@@ -170,7 +184,13 @@ def display_agents(
             batch_id = str(data["batch_id"])
             batch_counts[batch_id] = batch_counts.get(batch_id, 0) + 1
         batches_summary = ", ".join(f"{b}: {c}" for b, c in batch_counts.items())
-        click.echo(f"Batches: {len(batch_counts)} ({batches_summary})")
+        summary_lines.append(f"Batches: {len(batch_counts)} ({batches_summary})")
+
+    # Add summary as a footer
+    table.caption_justify = "left"
+    table.caption = "\n".join(summary_lines)
+
+    return table
 
 
 @click.command()
@@ -186,23 +206,23 @@ def list(grouped: bool, all: bool, watch: bool):
     tmux_mgr = TmuxManager(config.tmux_prefix)
 
     if watch:
-        # Run in watch mode
+        # Run in watch mode with Live display
+        console.print("[dim]Press Ctrl+C to exit watch mode[/dim]")
         try:
-            while True:
-                # Clear screen
-                print("\033[H\033[2J", end="")
-
-                # Display agents
-                display_agents(config, state, tmux_mgr, grouped, all)
-
-                # Add timestamp
-                print(f"\nLast updated: {datetime.now().strftime('%H:%M:%S')}")
-                print("Press Ctrl+C to exit watch mode")
-
-                time.sleep(1)
+            with Live(
+                create_agents_table(config, state, tmux_mgr, grouped, all),
+                refresh_per_second=1,
+                screen=True,
+                console=console,
+            ) as live:
+                while True:
+                    time.sleep(1)
+                    table = create_agents_table(config, state, tmux_mgr, grouped, all)
+                    live.update(table)
         except KeyboardInterrupt:
-            print("\nExiting watch mode")
+            console.print("\n[dim]Exiting watch mode[/dim]")
             sys.exit(0)
     else:
         # Display once
-        display_agents(config, state, tmux_mgr, grouped, all)
+        table = create_agents_table(config, state, tmux_mgr, grouped, all)
+        console.print(table)
