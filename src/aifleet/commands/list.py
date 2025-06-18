@@ -134,8 +134,8 @@ def create_agents_table(
         status_text = Text(str(data["status"]), style=status_color)
 
         table.add_row(
-            str(data["branch"])[:25],
-            str(data["batch_id"])[:15],
+            str(data["branch"])[:50],
+            str(data["batch_id"])[:30],
             str(data["agent"]),
             status_text,
             f"{float(data['cpu']):.1f}",
